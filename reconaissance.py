@@ -43,3 +43,4 @@ expr = (mot + "(?:"+  det + "|" + nc + "|" + npp + "|"
     + advwh + "|"  + adj + "|" + adv + "|" + et + "|"
     + cc + "|" + cs + "|" + cls + "|" + clo + "|" + clr + "|"
     + ponct + "|" + prorel + "|" + pro + "|" + pref + "|" + pd + "|" + p +")" )
+

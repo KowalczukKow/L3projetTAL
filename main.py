@@ -1,5 +1,6 @@
 import re
 from reconaissance import expr
+import fonctions
 
 def main():
     print("hello")
@@ -16,6 +17,7 @@ def main():
         pourcentage = len(valides)/len(motsTotal) * 100
         print("Pourcentage des mots bien annotés: " + str(pourcentage) + "%")
 
+    fonctions.createur_index(valides)
 
 if __name__ == "__main__":
     main()
