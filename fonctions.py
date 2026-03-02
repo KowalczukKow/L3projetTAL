@@ -55,17 +55,24 @@ def update_index() :
         # attention !!! index_triee est un liste est pas un dictionnaire
 
     new_index = {}
+
+    rang_actuel = 0 # s'il y a quelques mots avec le même nb d'occurences
+    nb_actuel = 0 #nombre d'occurences d'un mot
     #for i in index_trie : print(i)
     for i, (mot, infos) in enumerate(index_trie) :
-        rang = i+1 # pour l'instant chaque mot est de rang différent
-        freq = infos['nb']/nb_mots * 100
-        print(freq)
+        rang = i+1 
+        nb_occ = infos['nb']
+        freq = nb_occ/nb_mots * 100
+
+        if(nb_actuel > nb_occ or nb_actuel == 0) :
+            nb_actuel = nb_occ
+            rang_actuel = rang
 
         new_index[mot] = {
             'tags' : infos['tags'],
-            'nb' : infos['nb'],
+            'nb' : nb_occ,
             'n_phrase' : infos['n_phrase'],
-            'rang' : rang,
+            'rang' : rang_actuel,
             'freq' : round(freq, 4)
         }
     
