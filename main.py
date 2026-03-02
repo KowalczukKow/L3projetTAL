@@ -18,6 +18,8 @@ def main():
         print("Pourcentage des mots bien annotés: " + str(pourcentage) + "%")
 
     fonctions.createur_index(valides)
+    fonctions.update_index()
+    fonctions.affiche_index()
 
 if __name__ == "__main__":
     main()
