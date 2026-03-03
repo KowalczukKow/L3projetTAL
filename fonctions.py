@@ -24,6 +24,7 @@ def affiche_index():
 def createur_index(valides) :
     set_nb_mots(len(valides))
     n_phrase = 1
+    pos_phrase = 1 # position dans la phrase, on inclut les ponct 
     print(nb_mots)
     for m in valides :
         mot, tag = m.split('/') #pour séparer le mot de sa classe grammaticale
@@ -34,15 +35,20 @@ def createur_index(valides) :
             index[mot] = {
                 'tags' : [],
                 'nb' : 0,
-                'n_phrase' : []
+                'n_phrase' : [],
+                'pos_phrase' : []
             }
 
         index[mot]['tags'].append(tag)
         index[mot]['nb'] +=1
         index[mot]['n_phrase'].append(n_phrase)
+        index[mot]['pos_phrase'].append(pos_phrase)
+
+        pos_phrase +=1
 
         if tag== 'PONCT' and mot in['.','!','?'] : 
             n_phrase+=1
+            pos_phrase = 1
 
     nb_phrases = n_phrase
     affiche_index()
@@ -58,7 +64,7 @@ def update_index() :
 
     rang_actuel = 0 # s'il y a quelques mots avec le même nb d'occurences
     nb_actuel = 0 #nombre d'occurences d'un mot
-    #for i in index_trie : print(i)
+
     for i, (mot, infos) in enumerate(index_trie) :
         rang = i+1 
         nb_occ = infos['nb']
@@ -72,6 +78,7 @@ def update_index() :
             'tags' : infos['tags'],
             'nb' : nb_occ,
             'n_phrase' : infos['n_phrase'],
+            'pos_phrase' : infos['pos_phrase'],
             'rang' : rang_actuel,
             'freq' : round(freq, 4)
         }
