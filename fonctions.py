@@ -1,6 +1,6 @@
 import re
 import matplotlib.pyplot as plt
-import numpy as np
+import math
 
 index = {} # nous permet de stocker des informations sur les mots
 coocc = {}
@@ -20,6 +20,10 @@ def set_nb_phrases(x):
 def set_nb_mots(x):
     global nb_mots
     nb_mots = x
+
+def set_nb_formes(x) :
+    global nb_formes
+    nb_formes = x
 
 def set_valides(liste) :
     global valides 
@@ -62,7 +66,7 @@ def createur_index(valid) :
     nb_phrases = n_phrase
     #affiche_index()
     print("Nombre de phrases", nb_phrases)
-    nb_formes = len(index)
+    set_nb_formes(len(index))
     print("Nombre de formes (ponct inclus) : ", nb_formes)
     
 def update_index() :
@@ -123,13 +127,26 @@ def cooccurence() :
         if mot1 not in coocc :
             coocc[mot1] = {}
         if mot2 not in coocc[mot1] :
-            coocc[mot1][mot2] = 1 # nb d'occurences de mot1 mot2 
+            coocc[mot1][mot2] = {
+                'nb' : 1, # nb d'occurences de mot1 mot2 
+                'pmi' : 0 # pontwise mutual information
+            }
         else :
-            coocc[mot1][mot2]+=1
+            coocc[mot1][mot2]['nb']+=1
 
+        calcul_pmi()
         affiche_coocc()
 
 def affiche_coocc() :
     for mot1 in coocc :
         for mot2 in coocc[mot1] :
-            print(mot1 + ", " + mot2 + ":",coocc[mot1][mot2])
+            print(mot1 + ", " + mot2 + ":",coocc[mot1][mot2]['nb'], coocc[mot1][mot2]['pmi'])
+
+def calcul_pmi() :
+    for mot1 in coocc :
+        for mot2 in coocc[mot1] :
+            nb_paire = coocc[mot1][mot2]['nb']
+            nb_1 = index[mot1]['nb']
+            nb_2 = index[mot2]['nb']
+            #print(nb_paire, nb_1, nb_2, nb_formes)
+            coocc[mot1][mot2]['pmi'] = math.log2(nb_paire * nb_formes/(nb_1 * nb_2))
