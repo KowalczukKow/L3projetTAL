@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 index = {} # nous permet de stocker des informations sur les mots
+coocc = {}
 nb_phrases = 0
 nb_mots = 0
 nb_formes = 0
+valides = []
 
 def set_index(x) :
     global index
@@ -19,12 +21,17 @@ def set_nb_mots(x):
     global nb_mots
     nb_mots = x
 
+def set_valides(liste) :
+    global valides 
+    valides = liste
+
 def affiche_index():
     for motIndex in index :
         print(motIndex,' : ', index[motIndex])
 
-def createur_index(valides) :
-    set_nb_mots(len(valides))
+def createur_index(valid) :
+    set_valides(valid)
+    set_nb_mots(len(valid))
     n_phrase = 1
     pos_phrase = 1 # position dans la phrase, on inclut les ponct 
     print(nb_mots)
@@ -86,6 +93,7 @@ def update_index() :
         }
     
     set_index(new_index)
+    cooccurence()
 
 def loi_zipf_graphe() :
 
@@ -100,6 +108,28 @@ def loi_zipf_graphe() :
     plt.title("Loi de Zipf")
     plt.xlabel("log(rang)")
     plt.ylabel("log(freq)")
-    plt.loglog(rangs, frequences)
+    plt.loglog(rangs, frequences) # à l'échelle logarithmique
     plt.show()
 
+def cooccurence() :
+    for pos in range(nb_mots-1) :
+        mot1, tag1 = valides[pos].split('/') #pour séparer le mot de sa classe grammaticale
+        mot2, tag2 = valides[pos+1].split('/')
+
+        if(tag1!='NPP') : mot1 = mot1.lower() # S'il s'agit pas d'un nom propre, 
+                                        # le mot sera en minuscules 
+        if(tag2!='NPP') : mot2 = mot2.lower() 
+        
+        if mot1 not in coocc :
+            coocc[mot1] = {}
+        if mot2 not in coocc[mot1] :
+            coocc[mot1][mot2] = 1 # nb d'occurences de mot1 mot2 
+        else :
+            coocc[mot1][mot2]+=1
+
+        affiche_coocc()
+
+def affiche_coocc() :
+    for mot1 in coocc :
+        for mot2 in coocc[mot1] :
+            print(mot1 + ", " + mot2 + ":",coocc[mot1][mot2])
