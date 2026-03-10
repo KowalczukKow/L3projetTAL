@@ -1,4 +1,6 @@
 import re
+import matplotlib.pyplot as plt
+import numpy as np
 
 index = {} # nous permet de stocker des informations sur les mots
 nb_phrases = 0
@@ -51,7 +53,7 @@ def createur_index(valides) :
             pos_phrase = 1
 
     nb_phrases = n_phrase
-    affiche_index()
+    #affiche_index()
     print("Nombre de phrases", nb_phrases)
     nb_formes = len(index)
     print("Nombre de formes (ponct inclus) : ", nb_formes)
@@ -84,3 +86,20 @@ def update_index() :
         }
     
     set_index(new_index)
+
+def loi_zipf_graphe() :
+
+    frequences = []
+    rangs = []
+
+    for mot in index :
+        frequences.append(index[mot]['freq'])
+        rangs.append(index[mot]['rang'])
+
+    plt.figure()
+    plt.title("Loi de Zipf")
+    plt.xlabel("log(rang)")
+    plt.ylabel("log(freq)")
+    plt.loglog(rangs, frequences)
+    plt.show()
+
