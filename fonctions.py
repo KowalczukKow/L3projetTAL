@@ -29,6 +29,10 @@ def set_valides(liste) :
     global valides 
     valides = liste
 
+def set_coocc(dict) :
+    global coocc
+    coocc = dict
+
 def affiche_index():
     for motIndex in index :
         print(motIndex,' : ', index[motIndex])
@@ -99,6 +103,7 @@ def update_index() :
     set_index(new_index)
     cooccurence()
 
+# mais en vrai, c'est quoi le but de zipf ?
 def loi_zipf_graphe() :
 
     frequences = []
@@ -115,6 +120,8 @@ def loi_zipf_graphe() :
     plt.loglog(rangs, frequences) # à l'échelle logarithmique
     plt.show()
 
+# crée un dictionnaire des mots avec les mots qui les suivent et
+# le nombre d'occurences de la paire dans l'ordre donné
 def cooccurence() :
     for pos in range(nb_mots-1) :
         mot1, tag1 = valides[pos].split('/') #pour séparer le mot de sa classe grammaticale
@@ -136,6 +143,8 @@ def cooccurence() :
 
         calcul_pmi()
         affiche_coocc()
+        sort_pmi_mot()
+        affiche_coocc()
 
 def affiche_coocc() :
     for mot1 in coocc :
@@ -150,3 +159,26 @@ def calcul_pmi() :
             nb_2 = index[mot2]['nb']
             #print(nb_paire, nb_1, nb_2, nb_formes)
             coocc[mot1][mot2]['pmi'] = math.log2(nb_paire * nb_formes/(nb_1 * nb_2))
+
+# les pmi sont triés pour chaque mot séparément!!!
+# Il s'agit pas d'une fonction qui nous donne des informations sur 
+# le corpus, elle se concentre sur les mots
+def sort_pmi_mot() :
+
+    new_coocc = {}
+
+    for mot1 in coocc :
+        coocc_trie = sorted(coocc[mot1].items(), key=lambda item: item[1]['pmi'], reverse = True)
+        
+        new_coocc[mot1] = {}
+
+        for mot2, infos in coocc_trie :
+            # on pourrait ignorer des mots s'il y a peu d'occ de la paire
+            new_coocc[mot1][mot2] = {
+                'nb' : infos['nb'],
+                'pmi' : infos['pmi']
+            }
+        
+        index[mot1]['coocc'] = new_coocc[mot1]
+
+    set_coocc(new_coocc)
