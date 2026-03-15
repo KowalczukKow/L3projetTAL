@@ -1,6 +1,7 @@
 import re
 import matplotlib.pyplot as plt
 import math
+import main
 
 index = {} # nous permet de stocker des informations sur les mots
 coocc = {}
@@ -8,6 +9,8 @@ nb_phrases = 0
 nb_mots = 0
 nb_formes = 0
 valides = []
+# comme coocc, mais qui n'est pas triée séparement pour chaque mot
+#pmi_global = {}
 
 def set_index(x) :
     global index
@@ -142,7 +145,6 @@ def cooccurence() :
             coocc[mot1][mot2]['nb']+=1
 
         calcul_pmi()
-        affiche_coocc()
         sort_pmi_mot()
         affiche_coocc()
 
@@ -182,3 +184,8 @@ def sort_pmi_mot() :
         index[mot1]['coocc'] = new_coocc[mot1]
 
     set_coocc(new_coocc)
+
+
+
+if __name__ == "__main__" :
+    main.main()
