@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 class CorpusStats:
     def __init__(self):
-        self.index = {} #
+        self.index = {}
         self.coocc = {} #collocations prinicipales
         self.tokens = []
         self.nb_mots = 0
