@@ -187,5 +187,46 @@ def sort_pmi_mot() :
 
 
 
+# cette fonctions permet a l'utilisateur de taper un mot et d'obtenir:
+# sa fréquence, son rang de fréquence, ses principales collocations
+def requete_mot():
+
+    continuer = True
+    while continuer:
+        mot = input(" Tapez un mot: ").strip()
+        mot_min = mot.lower()    # ignorer les majuscules
+
+        if mot_min not in index:
+            print(f"Le mot: '{mot}' n'est pas dans le corpus")
+            return
+        
+    
+        infos = index[mot_min]
+        print(f"\nMot : {mot_min}")
+        print(f"Fréquence : {infos['freq']}%")
+        print(f"Rang : {infos['rang']}")
+        if 'coocc' in infos and infos['coocc']:
+            print("Principales collocations (mot suivant : nb, PMI) :")
+            N=5         ## nombre maximum de collocations à afficher
+            for mot2, co in list(infos['coocc'].items())[:N]:
+                print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
+        
+        else:
+            print("Pas de collocations disponibles.")
+        
+
+        reponse = input("\nVoulez-vous analyser un autre mot ? (oui/non) : ").strip().lower()
+        if (reponse != 'oui'):
+            continuer = False
+            print("Fin de la consultation.")
+
+
+
+
+
+
 if __name__ == "__main__" :
     main.main()
+
+
+
