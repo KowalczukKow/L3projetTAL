@@ -70,44 +70,43 @@ class CorpusStats:
             nb = self.index[mot]['nb']
             liste_mots.append((mot, nb))
 
-            for i in range(len(liste_mots)):
-                for j in range(i+1, len(liste_mots)):
-                    if liste_mots[i][1] < liste_mots[j][1]:
-                        liste_mots[i], liste_mots[j] = liste_mots[j], liste_mots[i]
+        liste_mots.sort(key=lambda x: x[1], reverse=True)
 
-            rang = 0
-            dernier_nb = None
+        rang = 0
+        dernier_nb = None
 
-            for i, (mot, nb) in enumerate(liste_mots, start=1):
-                if nb != dernier_nb:
-                    rang = i
-                    dernier_nb = nb
+        for i, (mot, nb) in enumerate(liste_mots, start=1):
+            if nb != dernier_nb:
+                rang = i
+                dernier_nb = nb
 
-                self.index[mot]['rang'] = rang
-                self.index[mot]['freq'] = round(nb / self.nb_mots * 100, 4)
+            self.index[mot]['rang'] = rang
+            self.index[mot]['freq'] = round(nb / self.nb_mots * 100, 4)
 
     def cooccurrences(self):
         # calculer les cooccurrences pour chaque paire de mots adjacents dans le corpus
+        for sentence in self.sentences:
+            for i in range(len(sentence) - 1):
+                token1 = sentence[i]
+                token2 = sentence[i+1]
 
-        for i in range(self.nb_mots - 1):
-        
-            token1 = self.tokens[i]
-            token2 = self.tokens[i+1]
+                mot1, tag1 = token1.split('/', 1)
+                mot2, tag2 = token2.split('/', 1)
 
-            mot1, tag1 = token1.split('/')
-            mot2, tag2 = token2.split('/')
+                if tag1 == 'PONCT' or tag2 == 'PONCT':
+                    continue
 
-            if tag1 != 'NPP':
-                mot1 = mot1.lower()
-            if tag2 != 'NPP':
-                mot2 = mot2.lower()
+                if tag1 != 'NPP':
+                    mot1 = mot1.lower()
+                if tag2 != 'NPP':
+                    mot2 = mot2.lower()
 
-            if mot1 not in self.coocc:
-                self.coocc[mot1] = {}
-            if mot2 not in self.coocc[mot1]:
-                self.coocc[mot1][mot2] = {'nb': 0, 'pmi': 0.0}
+                if mot1 not in self.coocc:
+                    self.coocc[mot1] = {}
+                if mot2 not in self.coocc[mot1]:
+                    self.coocc[mot1][mot2] = {'nb': 0, 'pmi': 0.0}
 
-            self.coocc[mot1][mot2]['nb'] += 1
+                self.coocc[mot1][mot2]['nb'] += 1
 
     def pmi(self):
         # calculer le PMI pour chaque paire de mots dans les cooccurrences
@@ -123,7 +122,7 @@ class CorpusStats:
                 # PMI = log2( C(w1,w2) * N / (C(w1)*C(w2)) )
                 pmi = math.log2(nb_pair * self.nb_mots / (nb_1 * nb_2))
 
-                self.coocc[mot1][mot2] = (nb_pair, pmi)
+                self.coocc[mot1][mot2]['pmi'] = pmi
 
     def trier_pmi(self):
         # pour chaque mot, trier les cooccurrences par PMI décroissant et stocker dans l'index
@@ -135,14 +134,11 @@ class CorpusStats:
             liste = []
 
             for mot2 in self.coocc[mot1]:
-                nb, pmi = self.coocc[mot1][mot2]
+                nb, pmi = self.coocc[mot1][mot2]['nb'], self.coocc[mot1][mot2]['pmi']
                 liste.append((mot2, nb, pmi))
 
             # trier la liste par PMI décroissant
-            for i in range(len(liste)):
-                for j in range(i+1, len(liste)):
-                    if liste[i][2] < liste[j][2]:
-                        liste[i], liste[j] = liste[j], liste[i]
+            liste.sort(key=lambda x: x[2], reverse=True)
 
             # stocker les cooccurrences triées dans l'index
             self.index[mot1]['coocc'] = {}
@@ -152,7 +148,7 @@ class CorpusStats:
 
 
     def plot_zipf(self):
-        """画出 Zipf 图（频率-等级双对数图）"""
+
         rangs = []
         frequences = []
 
@@ -164,10 +160,52 @@ class CorpusStats:
         plt.title("Loi de Zipf")
         plt.xlabel("log(rang)")
         plt.ylabel("log(fréquence)")
-        plt.loglog(rangs, frequences, 'o', markersize=2)
+        plt.loglog(rangs, frequences, 'o', markersize=3)
         plt.show()
+
+    def requete_mot(self):
+        while True:
+            mot = input("Entrez un mot (ou 'exit' pour quitter) : ")
+
+            if mot.lower() == 'exit':
+                break
+
+            if mot in self.index:
+                cible = mot
+            else:
+                mot_minus = mot.lower()
+                if mot_minus in self.index:
+                    cible = mot_minus
+                else:
+                    print(f"Le mot '{mot}' n'est pas trouvé dans le corpus.")
+                    rep = input("Voulez-vous essayer un autre mot (oui/non) : ")
+                    if rep.lower() != 'oui':
+                        print("Fin de la requête.")
+                        break
+                    continue
+
+            infos = self.index[cible]
+
+            print(f"Mot: {cible}")
+            print(f"Nombre d'occurrences: {infos['nb']}")
+            print(f"Rang: {infos['rang']}")
+            print(f"Fréquence: {infos['freq']}%")
+
+            if 'coocc' in infos and infos['coocc']:
+                print("Principales collocations (mot suivant : nb, PMI) :")
+                N = 5  # afficher les 5 meilleures collocations
+                for mot2, co in list(infos['coocc'].items())[:N]:
+                    print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
+            else:
+                print("Pas de collocations disponibles.")
+
+            reponse = input("\nVoulez-vous analyser un autre mot ? (oui/non) : ").strip().lower()
+            if reponse != 'oui':
+                print("Fin de la consultation.")
+                break
 
 if __name__ == "__main__":
     stats = CorpusStats()
     stats.read_corpus("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
     stats.plot_zipf()
+    stats.requete_mot()
