@@ -1,5 +1,4 @@
 import re
-import main
 
 mot = "[^/\s]*/" #tout sauf / et un espace 
 
@@ -9,17 +8,15 @@ nc = "NC"
 npp = "NPP"
 
 #verbes
-v = "V"
 vinf = "VINF" # verbe à l'infinitif
 vpr = "VPR" # participe présent 
 vpp = "VPP" # participe passé 
+v = "V"
 
 adj = "ADJ" 
 
-adv = "ADV" 
 advwh = "ADVWH" # adverbe interrogatif, wh-questions 
-
-p = "P" #préposition
+adv = "ADV" 
 
 cc = "CC" # conjonction de coordination
 cs = "CS" # conjonction de subordination 
@@ -39,6 +36,8 @@ ponct = "PONCT"
 
 pd = "P\+D"
 
+p = "P" #préposition
+
 expr = (mot + "(?:"+  det + "|" + nc + "|" + npp + "|" 
     + vinf + "|" + vpr + "|" + vpp + "|" + v + "|"
     + advwh + "|"  + adj + "|" + adv + "|" + et + "|"
@@ -47,4 +46,5 @@ expr = (mot + "(?:"+  det + "|" + nc + "|" + npp + "|"
 
 
 if __name__ == "__main__" :
+    import main
     main.main()
