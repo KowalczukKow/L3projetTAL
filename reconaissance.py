@@ -1,5 +1,4 @@
 import re
-import main
 
 mot = "[^/\s]*/" #tout sauf / et un espace 
 
@@ -47,4 +46,5 @@ expr = (mot + "(?:"+  det + "|" + nc + "|" + npp + "|"
 
 
 if __name__ == "__main__" :
+    import main
     main.main()

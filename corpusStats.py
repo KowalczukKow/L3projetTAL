@@ -2,7 +2,7 @@ import math
 import matplotlib.pyplot as plt
 
 class CorpusStats:
-    def __init__(self):
+    def __init__(self, corpus):
         self.index = {}
         self.coocc = {} #collocations prinicipales
         self.tokens = []
@@ -11,9 +11,9 @@ class CorpusStats:
         self.nb_formes = 0
         self.sentences = [] # pour le KWIC
 
-    def read_corpus(self, corpus):
+    def read_corpus(self):
 
-        with open(corpus, 'r', encoding='utf-8') as f:
+        with open(self.corpus, 'r', encoding='utf-8') as f:
             id_phrase = 1 # numéroter les phrases à partir de 1
             for line in f:
                 line = line.strip()
@@ -108,7 +108,7 @@ class CorpusStats:
 
                 self.coocc[mot1][mot2]['nb'] += 1
 
-    def pmi(self):
+    def calcul_pmi(self):
         # calculer le PMI pour chaque paire de mots dans les cooccurrences
 
         for mot1 in self.coocc:
