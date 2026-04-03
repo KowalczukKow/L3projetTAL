@@ -33,8 +33,11 @@ class CorpusStats:
                     self.tokens.append(token)
                     self.nb_mots += 1
 
-                    if automate and automate.fullmatch(token) :
-                        nb_valides += 1
+                    if automate :
+                        if automate.fullmatch(token) :
+                            nb_valides += 1
+                        elif test == True:
+                            print(token)
 
                     # séparer le mot et son tag
                     mot, tag = token.rsplit('/',1)

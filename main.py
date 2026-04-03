@@ -6,7 +6,7 @@ def main():
 
     automate = re.compile(expr)
 
-    stats = CorpusStats("corpus/small.brown")
+    stats = CorpusStats("corpus/sequoia-9.2.fine.brown")
     stats.read_corpus(automate, True)
     
 
