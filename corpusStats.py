@@ -183,9 +183,9 @@ class CorpusStats:
 
     def requete_mot(self):
         while True:
-            mot = input("Entrez un mot (ou 'exit' pour quitter) : ")
+            mot = input("Entrez un mot (ou appuyer sur ENTREE pour quitter) : ")
 
-            if mot.lower() == 'exit':
+            if not mot :
                 break
 
             if mot in self.index:
