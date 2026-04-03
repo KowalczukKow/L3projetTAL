@@ -8,6 +8,7 @@ def main():
     automate = re.compile(expr)
 
     stats = CorpusStats("corpus/small.brown")
+    stats.read_corpus(automate, True)
     # verifie si les mots étaient reconnus
     # with open("corpus/small.brown", "r", encoding="utf-8") as f:
     #     contenu = f.read()

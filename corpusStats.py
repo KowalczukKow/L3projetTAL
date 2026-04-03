@@ -1,8 +1,11 @@
 import math
+import re
+from reconaissance import expr
 import matplotlib.pyplot as plt
 
 class CorpusStats:
-    def __init__(self, corpus):
+    def __init__(self, corpus_path):
+        self.corpus = corpus_path
         self.index = {}
         self.coocc = {} #collocations prinicipales
         self.tokens = []
@@ -11,7 +14,8 @@ class CorpusStats:
         self.nb_formes = 0
         self.sentences = [] # pour le KWIC
 
-    def read_corpus(self):
+    def read_corpus(self, automate=None, test=False):
+        nb_valides = 0
 
         with open(self.corpus, 'r', encoding='utf-8') as f:
             id_phrase = 1 # numéroter les phrases à partir de 1
@@ -19,6 +23,7 @@ class CorpusStats:
                 line = line.strip()
                 if not line:
                     continue
+
                 words = line.split()   # les mots sont sous la forme "mot/tag"
                 self.sentences.append(words)   # stocke la phrase originale pour le KWIC
                 self.nb_phrases += 1
@@ -27,6 +32,9 @@ class CorpusStats:
                 for pos, token in enumerate(words, start=1):   # pos à partir de 1
                     self.tokens.append(token)
                     self.nb_mots += 1
+
+                    if automate and automate.fullmatch(token) :
+                        nb_valides += 1
 
                     # séparer le mot et son tag
                     mot, tag = token.split('/')
@@ -51,6 +59,12 @@ class CorpusStats:
                 id_phrase += 1
 
         self.nb_formes = len(self.index)
+        if test == True and automate: 
+            print("---TEST---")
+            print("Nombre de mots recconus :", nb_valides)
+            print("Pourcentage de mots reconnus : ", nb_valides/self.nb_mots * 100, "%")
+            print("----------")
+
         print(f"Nombre de mots: {self.nb_mots}")
         print(f"Nombre de phrases: {self.nb_phrases}")
         print(f"Nombre de formes: {self.nb_formes}")
@@ -108,7 +122,7 @@ class CorpusStats:
 
                 self.coocc[mot1][mot2]['nb'] += 1
 
-    def calcul_pmi(self):
+    def pmi(self):
         # calculer le PMI pour chaque paire de mots dans les cooccurrences
 
         for mot1 in self.coocc:
