@@ -37,7 +37,7 @@ class CorpusStats:
                         nb_valides += 1
 
                     # séparer le mot et son tag
-                    mot, tag = token.split('/')
+                    mot, tag = token.rsplit('/',1)
                     # rendre le mot en minuscules s'il n'est pas un nom propre
                     if tag != 'NPP':
                         mot = mot.lower()
@@ -60,6 +60,7 @@ class CorpusStats:
 
         self.nb_formes = len(self.index)
         if test == True and automate: 
+            print("Nom du fichier : ", self.corpus)
             print("---TEST---")
             print("Nombre de mots recconus :", nb_valides)
             print("Pourcentage de mots reconnus : ", nb_valides/self.nb_mots * 100, "%")
@@ -74,6 +75,7 @@ class CorpusStats:
         self.cooccurrences()
         self.pmi()
         self.trier_pmi()
+        self.requete_mot()
 
     def ranks_and_freqs(self):
 
@@ -104,11 +106,13 @@ class CorpusStats:
                 token1 = sentence[i]
                 token2 = sentence[i+1]
 
-                mot1, tag1 = token1.split('/', 1)
-                mot2, tag2 = token2.split('/', 1)
+                mot1, tag1 = token1.rsplit('/', 1)
+                mot2, tag2 = token2.rsplit('/', 1)
 
-                if tag1 == 'PONCT' or tag2 == 'PONCT':
-                    continue
+                # je lai mis en commentaire parce que peut-être cest utile de savoir si le
+                # mot est à la fin / début de la phrase
+                # if tag1 == 'PONCT' or tag2 == 'PONCT':
+                #     continue
 
                 if tag1 != 'NPP':
                     mot1 = mot1.lower()
@@ -219,7 +223,9 @@ class CorpusStats:
                 break
 
 if __name__ == "__main__":
-    stats = CorpusStats()
-    stats.read_corpus("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
-    stats.plot_zipf()
-    stats.requete_mot()
+    import main
+    main.main()
+    # stats = CorpusStats()
+    # stats.read_corpus("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
+    # stats.plot_zipf()
+    # stats.requete_mot()
