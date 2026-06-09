@@ -20,6 +20,7 @@ def main():
     fonctions.update_index()
     #fonctions.affiche_index()
     fonctions.loi_zipf_graphe()
+    fonctions.requete_mot()
 
 if __name__ == "__main__":
     main()

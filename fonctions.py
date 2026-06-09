@@ -186,7 +186,8 @@ class CorpusStats:
 
     def kwic_words(self, word, size = 5, case_sensitive = False):
 
-        query = word if case_sensitive
+        if case_sensitive:
+            query = word 
         else: 
             query = word
             if word in self.index:
