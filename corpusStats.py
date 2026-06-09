@@ -270,7 +270,36 @@ class CorpusStats:
             print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
 
 
-    
+    import re
+    # Cette fonction génère une expression régulière pour trouver les occurrences d'un mot dans le corpus, en tenant compte de la casse et des tags
+    def kwic_regex(self, pattern, type = 'mot', case_sensitive = False):
+
+        regex = re.compile(pattern)
+        results = []
+
+        for id_phrase, phrase in enumerate(self.sentences, start=1):
+            for pos, token in enumerate(phrase, start=1):
+                mot, tag = token.split('/', 1)
+                if type == 'tag':
+                    cible = tag
+                else:
+                    if tag != 'NPP' and not case_sensitive:
+                        cible = mot.lower()
+                    else:
+                        cible = mot
+                if regex.research(cible):
+                    gauche_ind = max(0, pos - 1 - 5)  # 5 mots à gauche
+                    droite_ind = min(len(phrase), pos + 5)  # 5 mots à droite
+                    results.append({
+                        'id_phrase': id_phrase,
+                        'pos': pos,
+                        'gauche': phrase[gauche_ind:pos-1],
+                        'mot_enquete': token,
+                        'droite': phrase[pos:droite_ind]
+                    })
+
+
+
 
 if __name__ == "__main__":
     import main
