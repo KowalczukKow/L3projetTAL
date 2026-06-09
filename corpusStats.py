@@ -225,6 +225,80 @@ class CorpusStats:
                 print("Fin de la consultation.")
                 break
 
+    def kwic_words(self, word, size = 5, case_sensitive = False):
+
+        if case_sensitive:
+            query = word 
+        else: 
+            query = word
+            if word in self.index:
+                tags = self.index[word]['tags']
+                if 'NPP' in tags:
+                    query = word  # garder la casse pour les noms propres
+                else:
+                    query = word.lower()  # mettre en minuscules pour les autres mots
+
+        if query not in self.index:
+            print(f"Le mot '{word}' n'est pas trouvé dans le corpus.")
+            return []
+        
+        infos = self.index[query]
+        results = []
+
+        for id_phrase, pos in zip(infos['n_phrase'], infos['pos_phrase']):
+            sentence = self.sentences[id_phrase - 1]  # id_phrase commence à 1
+            gauche_ind = max(0, pos - size - 1)  # pos commence à 1
+            pos_enquete = pos - 1  # position du mot dans la phrase (0-indexé)
+            droite_ind = min(len(sentence), pos + size)  # pos + size est exclusif
+            results.append({
+                'id_phrase' : id_phrase,
+                'pos' : pos,
+                'gauche' : sentence[gauche_ind:pos_enquete],
+                'mot_enquete' : sentence[pos_enquete],
+                'droite' : sentence[pos_enquete + 1:droite_ind]
+            })
+        return results
+
+    def afficher_kwic(self, kwic_results, window=5, show_tag=True):
+        for res in kwic_results:
+            gauche_str = ' '.join(res['gauche'])
+            enquete_str = res['mot_enquete']
+            droite_str = ' '.join(res['droite'])
+            # aligner à gauche et à droite avec une largeur fixe pour que les mots enquêtés soient alignés verticalement
+            gauche_part = gauche_str.rjust(30) # 30 caractères pour la partie gauche
+            droite_part = droite_str.ljust(30) # 30 caractères pour la partie droite
+            print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
+
+
+    import re
+    # Cette fonction génère une expression régulière pour trouver les occurrences d'un mot dans le corpus, en tenant compte de la casse et des tags
+    def kwic_regex(self, pattern, type = 'mot', case_sensitive = False):
+
+        regex = re.compile(pattern)
+        results = []
+
+        for id_phrase, phrase in enumerate(self.sentences, start=1):
+            for pos, token in enumerate(phrase, start=1):
+                mot, tag = token.split('/', 1)
+                if type == 'tag':
+                    cible = tag
+                else:
+                    if tag != 'NPP' and not case_sensitive:
+                        cible = mot.lower()
+                    else:
+                        cible = mot
+                if regex.research(cible):
+                    gauche_ind = max(0, pos - 1 - 5)  # 5 mots à gauche
+                    droite_ind = min(len(phrase), pos + 5)  # 5 mots à droite
+                    results.append({
+                        'id_phrase': id_phrase,
+                        'pos': pos,
+                        'gauche': phrase[gauche_ind:pos-1],
+                        'mot_enquete': token,
+                        'droite': phrase[pos:droite_ind]
+                    })
+
+
 if __name__ == "__main__":
     import main
     main.main()
