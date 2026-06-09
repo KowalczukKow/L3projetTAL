@@ -225,6 +225,48 @@ class CorpusStats:
                 print("Fin de la consultation.")
                 break
 
+
+    # à compléter pour le n-gram 
+    def menu_concordancier(self):
+        while True:
+            print("\nMenu de concordancier :")
+            print("1. Rechercher un mot")
+            print("2. Rechercher une expression régulière")
+            print("3. Quitter")
+
+            choix = input("Entrez votre choix (1/2/3) : ").strip()
+
+            if choix == '1':
+                mot = input("Entrez le mot à rechercher : ").strip()
+                size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+                results = self.kwic_words(mot)
+                self.afficher_kwic(results)
+
+            elif choix == '2':
+                pattern = input("Entrez l'expression régulière à rechercher : ").strip()
+                cible = input("Recherche sur le mot ou sur son étiquette grammaticale ? (mot/tag) ").strip().lower()
+                while cible not in ('word', 'tag'):
+                    cible = input("Veuillez répondre 'word' ou 'tag' : ").strip().lower()
+                    size = int(input("Taille de la fenêtre contextuelle : ") or 5)
+                    sensitive = input("Respecter la casse ? (oui/non) : ").strip().lower()
+                    case_sensitive = True if sensitive == 'oui' else False
+
+                results = self.kwic_regex(pattern, type = cible, case_sensitive = case_sensitive)
+
+                if not results:
+                    print("Aucune occurrence trouvée.")
+                else:
+                    print(f"\n{len(results)} occurrence(s) trouvée(s) :\n")
+                    self.afficher_kwic(results, size, show_tag=True)
+
+            elif choix == '3':
+                print("Fin du concordancier.")
+                break
+
+            else:
+                print("Choix invalide. Veuillez réessayer.")
+
+
 if __name__ == "__main__":
     import main
     main.main()
