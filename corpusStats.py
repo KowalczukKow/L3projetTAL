@@ -78,7 +78,9 @@ class CorpusStats:
         self.cooccurrences()
         self.pmi()
         self.trier_pmi()
-        self.requete_mot()
+        
+        # Je l'exclus ici car dans l'appel des fonctions, on appelle séparément read_corpus et requete_mot
+        # self.requete_mot()
 
     def ranks_and_freqs(self):
 
@@ -220,6 +222,19 @@ class CorpusStats:
             else:
                 print("Pas de collocations disponibles.")
 
+
+            kwic_choice = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
+
+            if kwic_choice == 'oui':
+                size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+
+                kwic_results = self.kwic_words(cible, size = size, case_sensitive=False)
+
+                if kwic_results:
+                    self.afficher_kwic(kwic_results, size = size)
+                else:
+                    print("Aucun contexte trouvé.")
+
             reponse = input("\nVoulez-vous analyser un autre mot ? (oui/non) : ").strip().lower()
             if reponse != 'oui':
                 print("Fin de la consultation.")
@@ -259,7 +274,7 @@ class CorpusStats:
             })
         return results
 
-    def afficher_kwic(self, kwic_results, window=5, show_tag=True):
+    def afficher_kwic(self, kwic_results, size = 5, show_tag=True):
         for res in kwic_results:
             gauche_str = ' '.join(res['gauche'])
             enquete_str = res['mot_enquete']
@@ -270,9 +285,69 @@ class CorpusStats:
             print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
 
 
-    import re
-    # Cette fonction génère une expression régulière pour trouver les occurrences d'un mot dans le corpus, en tenant compte de la casse et des tags
-    def kwic_regex(self, pattern, type = 'mot', case_sensitive = False):
+    def requete_regex(self):
+        import re
+        pattern = input("Entrez l'expression régulière : ").strip()
+
+        if not pattern:
+            print("Expression invalide, retour au menu.")
+            return
+
+        type = input("Recherche sur le mot ou sur son étiquette grammaticale ? (mot/tag, defaut mot) ").strip().lower()
+        while type not in ('mot', 'tag'):
+            type = input("Veuillez répondre 'mot' ou 'tag' : ").strip().lower()
+
+        kwic_choix = input("Afficher le contexte (KWIC) ? (oui/non, défaut non) : ").strip().lower()
+        kwic = (kwic_choix == 'oui')
+
+        if kwic:
+            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+            case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
+            case_sensitive = (case_choix == 'oui')
+
+            results = self.kwic_regex(pattern, type = type, size = size, case_sensitive = case_sensitive)
+            if results:
+                self.afficher_kwic(results, size = size)
+            else:
+                print("Aucune occurrence trouvée.")
+
+        else:
+            case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
+            case_sensitive = (case_choix == 'oui')
+
+            regex = re.compile(pattern)
+            results = []
+
+            for id_phrase, phrase in enumerate(self.sentences, start=1):
+                for pos, token in enumerate(phrase, start=1):
+                    mot, tag = token.split('/', 1)
+                    if type == 'tag':
+                        cible = tag
+                    else:
+                        if tag != 'NPP' and not case_sensitive:
+                            cible = mot.lower()
+                        else:
+                            cible = mot
+
+                    if regex.search(cible):
+                        results.append({
+                            'mot': mot,
+                            'tag': tag,
+                            'phrase_id': id_phrase,
+                            'pos': pos
+                        })
+            if results:
+                print(f"\n{len(results)} occurrence(s) trouvée(s) :")
+                for id_phrase, pos, mot, tag in results[:20]:
+                    print(f"Phrase {id_phrase}, position {pos} : {mot}/{tag}")
+                if len(results) > 20:
+                    print(f"... et {len(results)-20} autres.")
+            else:
+                print("Aucune occurrence trouvée.")
+
+
+
+    def kwic_regex(self, pattern, type = 'mot', size = 5, case_sensitive = False):
 
         regex = re.compile(pattern)
         results = []
@@ -287,7 +362,9 @@ class CorpusStats:
                         cible = mot.lower()
                     else:
                         cible = mot
-                if regex.research(cible):
+
+                if regex.search(cible):
+                  
                     gauche_ind = max(0, pos - 1 - 5)  # 5 mots à gauche
                     droite_ind = min(len(phrase), pos + 5)  # 5 mots à droite
                     results.append({
@@ -298,11 +375,32 @@ class CorpusStats:
                         'droite': phrase[pos:droite_ind]
                     })
 
+        return results
+
 
 if __name__ == "__main__":
     import main
     main.main()
-    # stats = CorpusStats()
-    # stats.read_corpus("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
+    stats = CorpusStats("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
+    stats.read_corpus()
     # stats.plot_zipf()
-    # stats.requete_mot()
+
+    stats.read_corpus()   # 注意：read_corpus 中不能调用 requete_mot
+    
+    while True:
+        print("\n" + "="*40)
+        print("MENU PRINCIPAL - CONCORDANCIER")
+        print("1. Rechercher un mot (Statistiques + KWIC optionnel)")
+        print("2. Rechercher une expression régulière")
+        print("0. Quitter")
+        choix = input("Votre choix : ").strip()
+        
+        if choix == '0':
+            print("Au revoir !")
+            break
+        elif choix == '1':
+            stats.requete_mot()
+        elif choix == '2':
+            stats.requete_regex()
+        else:
+            print("Choix invalide, veuillez réessayer.")
