@@ -6,8 +6,9 @@ def main():
 
     automate = re.compile(expr)
 
-    stats = CorpusStats("corpus/small.brown")
+    stats = CorpusStats("corpus/sequoia-9.2.fine.brown")
     stats.read_corpus(automate, True)
+    stats.n_gramme("le taux de")
 
     while True:
         print("\n" + "="*40)

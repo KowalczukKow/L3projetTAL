@@ -376,10 +376,28 @@ class CorpusStats:
                     })
 
         return results
+    
+    def n_gramme(self, sequence) :
+        suite_cherchee = sequence.strip().split()
+        n = len(suite_cherchee)
+
+        if n == 0 :
+            print("Requête vide")
+
+        occurences = []
+        ids_phrases = []
+
+        for mot in suite_cherchee :
+            # on utilise set pour transformer la liste en ensemble
+            ids_phrases.append(set(self.index[mot]['n_phrase']))
+
+        print(ids_phrases)
+        print(set.intersection(*ids_phrases))
 
 
 if __name__ == "__main__":
     import main
     main.main()
+
     
     
