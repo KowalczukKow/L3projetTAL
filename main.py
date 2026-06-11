@@ -8,6 +8,24 @@ def main():
 
     stats = CorpusStats("corpus/small.brown")
     stats.read_corpus(automate, True)
+
+    while True:
+        print("\n" + "="*40)
+        print("MENU PRINCIPAL - CONCORDANCIER")
+        print("1. Rechercher un mot (Statistiques + KWIC optionnel)")
+        print("2. Rechercher une expression régulière")
+        print("0. Quitter")
+        choix = input("Votre choix : ").strip()
+        
+        if choix == '0':
+            print("Au revoir !")
+            break
+        elif choix == '1':
+            stats.requete_mot()
+        elif choix == '2':
+            stats.requete_regex()
+        else:
+            print("Choix invalide, veuillez réessayer.")
     
 
 if __name__ == "__main__":
