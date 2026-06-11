@@ -381,7 +381,7 @@ class CorpusStats:
 if __name__ == "__main__":
     import main
     main.main()
-    stats = CorpusStats("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
+    stats = CorpusStats("corpus/small.brown")
     stats.read_corpus()
     # stats.plot_zipf()
 
