@@ -381,7 +381,8 @@ class CorpusStats:
     
     # N-GRAMMES
 
-    def n_gramme(self, sequence) :
+    def n_gramme(self) :
+        sequence = input("Entrez la suite de mots : ")
         suite_cherchee = sequence.strip().split()
         n = len(suite_cherchee)
 
@@ -395,9 +396,7 @@ class CorpusStats:
             # on utilise set pour transformer la liste en ensemble
             mots_ids_phrases.append(set(self.index[mot]['n_phrase']))
 
-        #print(mots_ids_phrases)
         phrases_communes = set.intersection(*mots_ids_phrases)
-        print(phrases_communes)
 
         positions_p = {}
         
@@ -411,12 +410,28 @@ class CorpusStats:
                 if id_phrase in phrases_communes :
                     positions_p[id_phrase][i].append(pos)
 
-        print(positions_p)
+        return self.positions_n_grammes(positions_p, phrases_communes)
 
-    
+    def positions_n_grammes(self, positions_p, phrases_communes) :
+        # dictionnaire de structure [numero phrase] : [position mot 1, position mot 2...]
+        positions_n_grammes = {}
+        for id in phrases_communes :
+            n = len(positions_p[id])
+            for pos_base in positions_p[id][0] :
+                positions = []
+                for i in range(n) :
+                    if pos_base+i in positions_p[id][i] :
+                        positions.append(pos_base+i)
+                    else :
+                        positions = []
+                        break
+                if positions :
+                    if id not in positions_n_grammes :
+                        positions_n_grammes[id] = []
 
-
-
+                    positions_n_grammes[id].append(positions)
+        
+        return positions_n_grammes
 
 if __name__ == "__main__":
     import main
