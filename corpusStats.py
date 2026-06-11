@@ -240,6 +240,8 @@ class CorpusStats:
                 print("Fin de la consultation.")
                 break
 
+    # KWIC
+
     def kwic_words(self, word, size = 5, case_sensitive = False):
 
         if case_sensitive:
@@ -377,6 +379,8 @@ class CorpusStats:
 
         return results
     
+    # N-GRAMMES
+
     def n_gramme(self, sequence) :
         suite_cherchee = sequence.strip().split()
         n = len(suite_cherchee)
@@ -385,14 +389,33 @@ class CorpusStats:
             print("Requête vide")
 
         occurences = []
-        ids_phrases = []
+        mots_ids_phrases = []
 
         for mot in suite_cherchee :
             # on utilise set pour transformer la liste en ensemble
-            ids_phrases.append(set(self.index[mot]['n_phrase']))
+            mots_ids_phrases.append(set(self.index[mot]['n_phrase']))
 
-        print(ids_phrases)
-        print(set.intersection(*ids_phrases))
+        #print(mots_ids_phrases)
+        phrases_communes = set.intersection(*mots_ids_phrases)
+        print(phrases_communes)
+
+        positions_p = {}
+        
+        for id_phrase in phrases_communes :
+            positions_p[id_phrase] = [[] for _ in range(n)]
+
+        for i, mot in enumerate(suite_cherchee) :
+            
+            for id_phrase, pos in zip(self.index[mot]['n_phrase'], self.index[mot]['pos_phrase']): 
+                
+                if id_phrase in phrases_communes :
+                    positions_p[id_phrase][i].append(pos)
+
+        print(positions_p)
+
+    
+
+
 
 
 if __name__ == "__main__":
