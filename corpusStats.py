@@ -223,9 +223,9 @@ class CorpusStats:
                 print("Pas de collocations disponibles.")
 
 
-            kwic_choice = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
+            kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
 
-            if kwic_choice == 'oui':
+            if kwic_choix == 'oui':
                 size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
 
                 kwic_results = self.kwic_words(cible, size = size, case_sensitive=False)
@@ -385,7 +385,7 @@ if __name__ == "__main__":
     stats.read_corpus()
     # stats.plot_zipf()
 
-    stats.read_corpus()   # 注意：read_corpus 中不能调用 requete_mot
+    stats.read_corpus()
     
     while True:
         print("\n" + "="*40)
