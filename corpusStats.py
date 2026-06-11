@@ -78,7 +78,9 @@ class CorpusStats:
         self.cooccurrences()
         self.pmi()
         self.trier_pmi()
-        self.requete_mot()
+        
+        # Je l'exclus ici car dans l'appel des fonctions, on appelle séparément read_corpus et requete_mot
+        # self.requete_mot()
 
     def ranks_and_freqs(self):
 
@@ -220,15 +222,164 @@ class CorpusStats:
             else:
                 print("Pas de collocations disponibles.")
 
+
+            kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
+
+            if kwic_choix == 'oui':
+                size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+
+                kwic_results = self.kwic_words(cible, size = size, case_sensitive=False)
+
+                if kwic_results:
+                    self.afficher_kwic(kwic_results, size = size)
+                else:
+                    print("Aucun contexte trouvé.")
+
             reponse = input("\nVoulez-vous analyser un autre mot ? (oui/non) : ").strip().lower()
             if reponse != 'oui':
                 print("Fin de la consultation.")
                 break
 
+    def kwic_words(self, word, size = 5, case_sensitive = False):
+
+        if case_sensitive:
+            query = word 
+        else: 
+            query = word
+            if word in self.index:
+                tags = self.index[word]['tags']
+                if 'NPP' in tags:
+                    query = word  # garder la casse pour les noms propres
+                else:
+                    query = word.lower()  # mettre en minuscules pour les autres mots
+
+        if query not in self.index:
+            print(f"Le mot '{word}' n'est pas trouvé dans le corpus.")
+            return []
+        
+        infos = self.index[query]
+        results = []
+
+        for id_phrase, pos in zip(infos['n_phrase'], infos['pos_phrase']):
+            sentence = self.sentences[id_phrase - 1]  # id_phrase commence à 1
+            gauche_ind = max(0, pos - size - 1)  # pos commence à 1
+            pos_enquete = pos - 1  # position du mot dans la phrase (0-indexé)
+            droite_ind = min(len(sentence), pos + size)  # pos + size est exclusif
+            results.append({
+                'id_phrase' : id_phrase,
+                'pos' : pos,
+                'gauche' : sentence[gauche_ind:pos_enquete],
+                'mot_enquete' : sentence[pos_enquete],
+                'droite' : sentence[pos_enquete + 1:droite_ind]
+            })
+        return results
+
+    def afficher_kwic(self, kwic_results, size = 5, show_tag=True):
+        for res in kwic_results:
+            gauche_str = ' '.join(res['gauche'])
+            enquete_str = res['mot_enquete']
+            droite_str = ' '.join(res['droite'])
+            # aligner à gauche et à droite avec une largeur fixe pour que les mots enquêtés soient alignés verticalement
+            gauche_part = gauche_str.rjust(30) # 30 caractères pour la partie gauche
+            droite_part = droite_str.ljust(30) # 30 caractères pour la partie droite
+            print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
+
+
+    def requete_regex(self):
+        import re
+        pattern = input("Entrez l'expression régulière : ").strip()
+
+        if not pattern:
+            print("Expression invalide, retour au menu.")
+            return
+
+        type = input("Recherche sur le mot ou sur son étiquette grammaticale ? (mot/tag, defaut mot) ").strip().lower()
+        while type not in ('mot', 'tag'):
+            type = input("Veuillez répondre 'mot' ou 'tag' : ").strip().lower()
+
+        kwic_choix = input("Afficher le contexte (KWIC) ? (oui/non, défaut non) : ").strip().lower()
+        kwic = (kwic_choix == 'oui')
+
+        if kwic:
+            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+            case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
+            case_sensitive = (case_choix == 'oui')
+
+            results = self.kwic_regex(pattern, type = type, size = size, case_sensitive = case_sensitive)
+            if results:
+                self.afficher_kwic(results, size = size)
+            else:
+                print("Aucune occurrence trouvée.")
+
+        else:
+            case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
+            case_sensitive = (case_choix == 'oui')
+
+            regex = re.compile(pattern)
+            results = []
+
+            for id_phrase, phrase in enumerate(self.sentences, start=1):
+                for pos, token in enumerate(phrase, start=1):
+                    mot, tag = token.split('/', 1)
+                    if type == 'tag':
+                        cible = tag
+                    else:
+                        if tag != 'NPP' and not case_sensitive:
+                            cible = mot.lower()
+                        else:
+                            cible = mot
+
+                    if regex.search(cible):
+                        results.append({
+                            'mot': mot,
+                            'tag': tag,
+                            'phrase_id': id_phrase,
+                            'pos': pos
+                        })
+            if results:
+                print(f"\n{len(results)} occurrence(s) trouvée(s) :")
+                for id_phrase, pos, mot, tag in results[:20]:
+                    print(f"Phrase {id_phrase}, position {pos} : {mot}/{tag}")
+                if len(results) > 20:
+                    print(f"... et {len(results)-20} autres.")
+            else:
+                print("Aucune occurrence trouvée.")
+
+
+
+    def kwic_regex(self, pattern, type = 'mot', size = 5, case_sensitive = False):
+
+        regex = re.compile(pattern)
+        results = []
+
+        for id_phrase, phrase in enumerate(self.sentences, start=1):
+            for pos, token in enumerate(phrase, start=1):
+                mot, tag = token.split('/', 1)
+                if type == 'tag':
+                    cible = tag
+                else:
+                    if tag != 'NPP' and not case_sensitive:
+                        cible = mot.lower()
+                    else:
+                        cible = mot
+
+                if regex.search(cible):
+                  
+                    gauche_ind = max(0, pos - 1 - 5)  # 5 mots à gauche
+                    droite_ind = min(len(phrase), pos + 5)  # 5 mots à droite
+                    results.append({
+                        'id_phrase': id_phrase,
+                        'pos': pos,
+                        'gauche': phrase[gauche_ind:pos-1],
+                        'mot_enquete': token,
+                        'droite': phrase[pos:droite_ind]
+                    })
+
+        return results
+
+
 if __name__ == "__main__":
     import main
     main.main()
-    # stats = CorpusStats()
-    # stats.read_corpus("/Users/ajd.ifbeau/Desktop/L3projetTAL/L3projetTAL/corpus/small.brown")
-    # stats.plot_zipf()
-    # stats.requete_mot()
+    
+    
