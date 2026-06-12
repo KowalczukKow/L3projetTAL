@@ -1,6 +1,7 @@
 import math
 import re
 from reconaissance import expr
+from ngrammes import Ngramme
 import matplotlib.pyplot as plt
 
 class CorpusStats:
@@ -146,6 +147,9 @@ class CorpusStats:
                 pmi = math.log2(nb_pair * self.nb_mots / (nb_1 * nb_2))
 
                 self.coocc[mot1][mot2]['pmi'] = pmi
+
+    
+
 
     def trier_pmi(self):
         # pour chaque mot, trier les cooccurrences par PMI décroissant et stocker dans l'index
@@ -380,58 +384,15 @@ class CorpusStats:
         return results
     
     # N-GRAMMES
-
-    def n_gramme(self) :
+    def requete_n_gramme(self) :
         sequence = input("Entrez la suite de mots : ")
-        suite_cherchee = sequence.strip().split()
-        n = len(suite_cherchee)
-
-        if n == 0 :
-            print("Requête vide")
-
-        occurences = []
-        mots_ids_phrases = []
-
-        for mot in suite_cherchee :
-            # on utilise set pour transformer la liste en ensemble
-            mots_ids_phrases.append(set(self.index[mot]['n_phrase']))
-
-        phrases_communes = set.intersection(*mots_ids_phrases)
-
-        positions_p = {}
         
-        for id_phrase in phrases_communes :
-            positions_p[id_phrase] = [[] for _ in range(n)]
+        ngramme = Ngramme(self, sequence)
 
-        for i, mot in enumerate(suite_cherchee) :
-            
-            for id_phrase, pos in zip(self.index[mot]['n_phrase'], self.index[mot]['pos_phrase']): 
-                
-                if id_phrase in phrases_communes :
-                    positions_p[id_phrase][i].append(pos)
+        print(f"Mot: ", sequence)
+        print(f"Nombre d'occurrences: ", ngramme.nbOcc)
+    
 
-        return self.positions_n_grammes(positions_p, phrases_communes)
-
-    def positions_n_grammes(self, positions_p, phrases_communes) :
-        # dictionnaire de structure [numero phrase] : [position mot 1, position mot 2...]
-        positions_n_grammes = {}
-        for id in phrases_communes :
-            n = len(positions_p[id])
-            for pos_base in positions_p[id][0] :
-                positions = []
-                for i in range(n) :
-                    if pos_base+i in positions_p[id][i] :
-                        positions.append(pos_base+i)
-                    else :
-                        positions = []
-                        break
-                if positions :
-                    if id not in positions_n_grammes :
-                        positions_n_grammes[id] = []
-
-                    positions_n_grammes[id].append(positions)
-        
-        return positions_n_grammes
 
 if __name__ == "__main__":
     import main

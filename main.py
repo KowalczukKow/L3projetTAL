@@ -24,7 +24,7 @@ def main():
         elif choix == '1':
             stats.requete_mot()
         elif choix == '2':
-            stats.n_gramme()
+            stats.requete_n_gramme()
         elif choix == '3':
             stats.requete_regex()
         else:
