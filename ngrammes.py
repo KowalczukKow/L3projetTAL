@@ -121,15 +121,23 @@ class Ngramme:
                     self.coocc[1][mot]['nb'] += 1
 
         self.pmi_suite()
-                
+
+    # pour compter le nombre d'occurrences d'un mot dans le n-gramme pour
+    # ensuite ajuster le calcul de pmi
+    def verif_mot_pres(self, mot_a_verif) :
+        compteur = 0
+        for mot in self.liste_mots:
+            if mot == mot_a_verif :
+                compteur+=1
+        return compteur
+
     
-    # + faut gerer le cas ou le mot suivant est présent dans le ngrammme
     def pmi_suite(self) :
 
         for mot in self.coocc[1] :
 
             nb_pair = self.coocc[1][mot]['nb']
-            nb_occ_mot = self.corpus_stats.index[mot]['nb']
+            nb_occ_mot = self.corpus_stats.index[mot]['nb'] - self.nbOcc * self.verif_mot_pres(mot)
             pmi = math.log2(nb_pair * self.nb_total_corpus / (self.nbOcc * nb_occ_mot))
 
             self.coocc[1][mot]['pmi'] = pmi
