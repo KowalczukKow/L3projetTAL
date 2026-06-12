@@ -7,15 +7,17 @@ class Ngramme:
     def __init__(self, corpus_stats, sequence):
         self.corpus_stats = corpus_stats
         self.sequence = sequence
+        self.liste_mots = self.sequence.strip().split() # la séquence sous la forme d'une liste
         self.nbMots = 0
         self.positions_n_grammes = {}
         self.nbOcc = 0
+        self.freq = 0
+        self.coocc = []
         self.initialise_ngramme()
     
 
     def initialise_ngramme(self) :
-        suite_cherchee = self.sequence.strip().split()
-        self.nbMots = len(suite_cherchee)
+        self.nbMots = len(self.liste_mots)
 
         if self.nbMots == 0 :
             print("Requête vide")
@@ -23,7 +25,7 @@ class Ngramme:
         occurences = []
         mots_ids_phrases = []
 
-        for mot in suite_cherchee :
+        for mot in self.liste_mots :
             # on utilise set pour transformer la liste en ensemble
             mots_ids_phrases.append(set(self.corpus_stats.index[mot]['n_phrase']))
 
@@ -34,7 +36,7 @@ class Ngramme:
         for id_phrase in phrases_communes :
             positions_p[id_phrase] = [[] for _ in range(self.nbMots)]
 
-        for i, mot in enumerate(suite_cherchee) :
+        for i, mot in enumerate(self.liste_mots) :
             
             for id_phrase, pos in zip(self.corpus_stats.index[mot]['n_phrase'], self.corpus_stats.index[mot]['pos_phrase']): 
                 
@@ -42,10 +44,13 @@ class Ngramme:
                     positions_p[id_phrase][i].append(pos)
 
         self.sort_positions_n_grammes(positions_p, phrases_communes)
+        self.calc_freq()
+        self.cooccurrences_suite()
     
     
     def sort_positions_n_grammes(self, positions_p, phrases_communes) :
-        # dictionnaire de structure [numero phrase] : [position mot 1, position mot 2...]
+        # dictionnaire de structure [numero phrase] : [position mot 1, position mot 2...], 
+        # (si 1+ occurences dans la phrase)[position mot 1, position mot 2...]
         for id in phrases_communes :
             n = len(positions_p[id])
             for pos_base in positions_p[id][0] :
@@ -63,8 +68,61 @@ class Ngramme:
 
                     self.positions_n_grammes[id].append(positions)
     
+
+    def calc_freq(self) :
+        nb_total = self.corpus_stats.nb_mots - self.nbOcc * (self.nbMots - 1)
+        self.freq = round(self.nbOcc / nb_total * 100, 4)
     
-    # def pmi_suite(self, positions_n_grammes) :
+
+    def cooccurrences_suite(self) : 
+        #mot1 = self.liste_mots[0] # le premier mot
+        self.coocc.append({})
+
+        #mot2 = self.liste_mots[-1] # le dernier mot
+        self.coocc.append({})
+
+        for id_phrase in self.positions_n_grammes.keys() :
+            for i in range(len(self.positions_n_grammes[id_phrase])):
+                pos1 = self.positions_n_grammes[id_phrase][i][0]
+                
+                # on vérifie s'il sagit pas du premier mot du corpus
+                if not (id_phrase == 0 and pos1 == 1) : 
+                    token = ""
+                    if pos1 == 1 :
+                        token = self.corpus_stats.sentences[id_phrase-2][-1]
+                    else :
+                        token = self.corpus_stats.sentences[id_phrase-1][pos1-2]
+
+                    mot, tag = token.split('/', 1)
+
+                    if mot not in self.coocc[0] :
+                        self.coocc[0][mot] = {'nb': 0, 'pmi': 0.0}
+
+                    self.coocc[0][mot]['nb'] += 1
+
+                pos2 = self.positions_n_grammes[id_phrase][i][-1]
+                posMax = len(self.corpus_stats.sentences[id_phrase-1])
+
+                # on vérifie s'il sagit pas du dernier mot du corpus
+                if not (pos2 == posMax and id_phrase == self.corpus_stats.nb_phrases) : 
+                    token = ""
+                    if pos2 == posMax :
+                        token = self.corpus_stats.sentences[id_phrase][0]
+                    else :
+                        token = self.corpus_stats.sentences[id_phrase-1][pos2]
+
+                    mot, tag = token.split('/', 1)
+
+                    if mot not in self.coocc[1] :
+                        self.coocc[1][mot] = {'nb': 0, 'pmi': 0.0}
+
+                    self.coocc[1][mot]['nb'] += 1
+                
+    
+    #def pmi_suite(self, positions_n_grammes) :
+
+
+
     #     + kwi suites???
 
 if __name__ == "__main__":

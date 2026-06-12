@@ -391,7 +391,10 @@ class CorpusStats:
 
         print(f"Mot: ", sequence)
         print(f"Nombre d'occurrences: ", ngramme.nbOcc)
-    
+        print(f"Fréquence: ", ngramme.freq, "%")
+        print("Principales collocations (mot suivant : nb, PMI) :")
+        for mot in ngramme.coocc[1].keys():
+                    print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
 
 
 if __name__ == "__main__":
