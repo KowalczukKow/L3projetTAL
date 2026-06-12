@@ -16,7 +16,7 @@ def main():
         print("MENU PRINCIPAL - CONCORDANCIER")
         print("1. Informations générales du corpus")
         print("2. Graphe de Zipf")
-        print("3. Rechercher un mot (KWIC optionnel)")
+        print("3. Rechercher un mot (fréquence, rang, 5 collocations les plus fréquentes, KWIC optionnel)")
         print("4. Rechercher une expression régulière (KWIC optionnel)")
         # print("5. n-gram")
         print("0. Quitter")
