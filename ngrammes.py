@@ -11,6 +11,8 @@ class Ngramme:
         self.nbMots = 0
         self.positions_n_grammes = {}
         self.nbOcc = 0
+        # nb des mots dans le corpus si on considère le n gramme commme un seul mot
+        self.nb_total_corpus = 0 
         self.freq = 0
         self.coocc = []
         self.initialise_ngramme()
@@ -70,8 +72,8 @@ class Ngramme:
     
 
     def calc_freq(self) :
-        nb_total = self.corpus_stats.nb_mots - self.nbOcc * (self.nbMots - 1)
-        self.freq = round(self.nbOcc / nb_total * 100, 4)
+        self.nb_total_corpus = self.corpus_stats.nb_mots - self.nbOcc * (self.nbMots - 1)
+        self.freq = round(self.nbOcc / self.nb_total_corpus * 100, 4)
     
 
     def cooccurrences_suite(self) : 
@@ -117,11 +119,40 @@ class Ngramme:
                         self.coocc[1][mot] = {'nb': 0, 'pmi': 0.0}
 
                     self.coocc[1][mot]['nb'] += 1
+
+        self.pmi_suite()
                 
     
-    #def pmi_suite(self, positions_n_grammes) :
+    # + faut gerer le cas ou le mot suivant est présent dans le ngrammme
+    def pmi_suite(self) :
+
+        for mot in self.coocc[1] :
+
+            nb_pair = self.coocc[1][mot]['nb']
+            nb_occ_mot = self.corpus_stats.index[mot]['nb']
+            pmi = math.log2(nb_pair * self.nb_total_corpus / (self.nbOcc * nb_occ_mot))
+
+            self.coocc[1][mot]['pmi'] = pmi
+        
+        self.trier_pmi_suites()
 
 
+    def trier_pmi_suites(self):
+        # pour chaque mot, trier les cooccurrences par PMI décroissant
+        liste = []
+
+        for mot in self.coocc[1]:
+            nb, pmi = self.coocc[1][mot]['nb'], self.coocc[1][mot]['pmi']
+            liste.append((mot, nb, pmi))
+
+        # trier la liste par PMI décroissant
+        liste.sort(key=lambda x: x[2], reverse=True)
+
+        # stocker les cooccurrences triées dans l'index
+        self.coocc[1] = {}
+
+        for mot, nb, pmi in liste:
+            self.coocc[1][mot] = {'nb': nb, 'pmi': pmi}
 
     #     + kwi suites???
 
