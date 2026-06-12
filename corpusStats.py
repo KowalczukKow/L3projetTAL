@@ -1,6 +1,7 @@
 import math
 import re
 from reconaissance import expr
+from ngrammes import Ngramme
 import matplotlib.pyplot as plt
 
 class CorpusStats:
@@ -147,6 +148,9 @@ class CorpusStats:
 
                 self.coocc[mot1][mot2]['pmi'] = pmi
 
+    
+
+
     def trier_pmi(self):
         # pour chaque mot, trier les cooccurrences par PMI décroissant et stocker dans l'index
 
@@ -239,6 +243,8 @@ class CorpusStats:
             if reponse != 'oui':
                 print("Fin de la consultation.")
                 break
+
+    # KWIC
 
     def kwic_words(self, word, size = 5, case_sensitive = False):
 
@@ -376,6 +382,31 @@ class CorpusStats:
                     })
 
         return results
+    
+    # N-GRAMMES
+    def requete_n_gramme(self) :
+        sequence = input("Entrez la suite de mots : ")
+        
+        ngramme = Ngramme(self, sequence)
+
+        print(f"Mot: ", sequence)
+        print(f"Nombre d'occurrences: ", ngramme.nbOcc)
+        print(f"Fréquence: ", ngramme.freq, "%")
+        print("Principales collocations (mot suivant : nb, PMI) :")
+        for mot in ngramme.coocc[1].keys():
+            print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
+        
+        kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
+
+        if kwic_choix == 'oui':
+            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 3) : ") or 3)
+
+            kwic_results = ngramme.kwic_suites(size)
+
+            if kwic_results:
+                ngramme.afficher_kwic_suite(kwic_results)
+            else:
+                print("Aucun contexte trouvé.")
 
     """
     Pour rendre votre concordancier relativement indépendant du format du corpus, il faut découpler 
@@ -398,5 +429,6 @@ class CorpusStats:
 if __name__ == "__main__":
     import main
     main.main()
+
     
     
