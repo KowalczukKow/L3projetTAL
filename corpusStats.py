@@ -394,7 +394,19 @@ class CorpusStats:
         print(f"Fréquence: ", ngramme.freq, "%")
         print("Principales collocations (mot suivant : nb, PMI) :")
         for mot in ngramme.coocc[1].keys():
-                    print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
+            print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
+        
+        kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
+
+        if kwic_choix == 'oui':
+            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 3) : ") or 3)
+
+            kwic_results = ngramme.kwic_suites(size)
+
+            if kwic_results:
+                ngramme.afficher_kwic_suite(kwic_results)
+            else:
+                print("Aucun contexte trouvé.")
 
 
 if __name__ == "__main__":

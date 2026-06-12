@@ -162,7 +162,41 @@ class Ngramme:
         for mot, nb, pmi in liste:
             self.coocc[1][mot] = {'nb': nb, 'pmi': pmi}
 
-    #     + kwi suites???
+    
+    def kwic_suites(self, size = 3) :
+        results = [] 
+        
+        for id_phrase in self.positions_n_grammes.keys() :
+            for i in range(len(self.positions_n_grammes[id_phrase])):
+
+                pos1 = self.positions_n_grammes[id_phrase][i][0]
+                pos2 = self.positions_n_grammes[id_phrase][i][-1]
+
+                sentence = self.corpus_stats.sentences[id_phrase-1]
+
+                gauche_ind = max(0, pos1 - size - 1)
+                droite_ind = min(len(sentence), pos2 + size)
+
+                results.append({
+                    'id_phrase' : id_phrase,
+                    'pos_debut' : pos1,
+                    'pos_fin' : pos2,
+                    'gauche' : sentence[gauche_ind:pos1-1],
+                    'n-gramme_enquete' : sentence[pos1-1:pos2],
+                    'droite' : sentence[pos2:droite_ind]
+                })
+        
+        return results
+    
+    def afficher_kwic_suite(self, kwic_results) :
+        for res in kwic_results:
+            gauche_str = ' '.join(res['gauche'])
+            enquete_str = ' '.join(res['n-gramme_enquete'])
+            droite_str = ' '.join(res['droite'])
+            # aligner à gauche et à droite avec une largeur fixe pour que les mots enquêtés soient alignés verticalement
+            gauche_part = gauche_str.rjust(30) # 30 caractères pour la partie gauche
+            droite_part = droite_str.ljust(30) # 30 caractères pour la partie droite
+            print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
 
 if __name__ == "__main__":
     import main
