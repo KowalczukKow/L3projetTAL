@@ -40,7 +40,7 @@ class CorpusStats:
                             print(token)
 
                     # séparer le mot et son tag
-                    mot, tag = token.rsplit('/',1)
+                    mot, tag = self.parser_token(token)
                     # rendre le mot en minuscules s'il n'est pas un nom propre
                     if tag != 'NPP':
                         mot = mot.lower()
@@ -62,6 +62,8 @@ class CorpusStats:
                 id_phrase += 1
 
         self.nb_formes = len(self.index)
+
+    def info_generale(self, automate=None, test=False):
         if test == True and automate: 
             print("Nom du fichier : ", self.corpus)
             print("---TEST---")
@@ -73,14 +75,24 @@ class CorpusStats:
         print(f"Nombre de phrases: {self.nb_phrases}")
         print(f"Nombre de formes: {self.nb_formes}")
 
+    def calculer_stats(self):
         # Partie statistiques
+        print("\nCalcul des statistiques du corpus...")
+
         self.ranks_and_freqs()
+        print("- Fréquences et rangs calculés.")
+
         self.cooccurrences()
+        print("- Cooccurrences calculées.")
+
         self.pmi()
+        print("- PMI calculé.")
+
         self.trier_pmi()
+        print("- Collocations triées.")
+
+        print("Statistiques calculées avec succès.\n")
         
-        # Je l'exclus ici car dans l'appel des fonctions, on appelle séparément read_corpus et requete_mot
-        # self.requete_mot()
 
     def ranks_and_freqs(self):
 
@@ -111,8 +123,8 @@ class CorpusStats:
                 token1 = sentence[i]
                 token2 = sentence[i+1]
 
-                mot1, tag1 = token1.rsplit('/', 1)
-                mot2, tag2 = token2.rsplit('/', 1)
+                mot1, tag1 = self.parser_token(token1)
+                mot2, tag2 = self.parser_token(token2)
 
                 # je lai mis en commentaire parce que peut-être cest utile de savoir si le
                 # mot est à la fin / début de la phrase
@@ -320,7 +332,7 @@ class CorpusStats:
 
             for id_phrase, phrase in enumerate(self.sentences, start=1):
                 for pos, token in enumerate(phrase, start=1):
-                    mot, tag = token.split('/', 1)
+                    mot, tag = self.parser_token(token)
                     if type == 'tag':
                         cible = tag
                     else:
@@ -338,8 +350,8 @@ class CorpusStats:
                         })
             if results:
                 print(f"\n{len(results)} occurrence(s) trouvée(s) :")
-                for id_phrase, pos, mot, tag in results[:20]:
-                    print(f"Phrase {id_phrase}, position {pos} : {mot}/{tag}")
+                for res in results[:20]:
+                    print(f"Phrase {res['phrase_id']}, position {res['pos']} : {res['mot']}/{res['tag']}")
                 if len(results) > 20:
                     print(f"... et {len(results)-20} autres.")
             else:
@@ -354,7 +366,7 @@ class CorpusStats:
 
         for id_phrase, phrase in enumerate(self.sentences, start=1):
             for pos, token in enumerate(phrase, start=1):
-                mot, tag = token.split('/', 1)
+                mot, tag = self.parser_token(token)
                 if type == 'tag':
                     cible = tag
                 else:
@@ -365,8 +377,8 @@ class CorpusStats:
 
                 if regex.search(cible):
                   
-                    gauche_ind = max(0, pos - 1 - 5)  # 5 mots à gauche
-                    droite_ind = min(len(phrase), pos + 5)  # 5 mots à droite
+                    gauche_ind = max(0, pos - 1 - size) 
+                    droite_ind = min(len(phrase), pos + size) 
                     results.append({
                         'id_phrase': id_phrase,
                         'pos': pos,
@@ -376,6 +388,23 @@ class CorpusStats:
                     })
 
         return results
+
+    """
+    Pour rendre votre concordancier relativement indépendant du format du corpus, il faut découpler 
+    la logique de parsing des tokens (la façon dont on extrait le mot et son tag) du reste du code. 
+    Actuellement, votre corpus utilise le format mot/tag (par exemple chat/N). Mais si vous changez 
+    de format (mot_tag, mot:tag, ou même du texte sans tag), vous ne voulez pas réécrire toutes vos
+    fonctions.
+    """
+
+    def parser_token(self, token):
+        # Cette fonction prend un token brut et retourne le mot et son tag
+        # Par défaut, elle suppose le format mot/tag
+        if '/' in token:
+            mot, tag = token.rsplit('/', 1)
+        else:
+            mot, tag = token, None  # si pas de tag, on retourne None
+        return mot, tag
 
 
 if __name__ == "__main__":
