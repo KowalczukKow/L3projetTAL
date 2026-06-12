@@ -63,6 +63,12 @@ class CorpusStats:
 
         self.nb_formes = len(self.index)
 
+        # Partie statistiques
+        self.ranks_and_freqs()
+        self.cooccurrences()
+        self.pmi()
+        self.trier_pmi()
+
     def info_generale(self, automate=None, test=False):
         if test == True and automate: 
             print("Nom du fichier : ", self.corpus)
@@ -75,24 +81,6 @@ class CorpusStats:
         print(f"Nombre de phrases: {self.nb_phrases}")
         print(f"Nombre de formes: {self.nb_formes}")
 
-    def calculer_stats(self):
-        # Partie statistiques
-        print("\nCalcul des statistiques du corpus...")
-
-        self.ranks_and_freqs()
-        print("- Fréquences et rangs calculés.")
-
-        self.cooccurrences()
-        print("- Cooccurrences calculées.")
-
-        self.pmi()
-        print("- PMI calculé.")
-
-        self.trier_pmi()
-        print("- Collocations triées.")
-
-        print("Statistiques calculées avec succès.\n")
-        
 
     def ranks_and_freqs(self):
 
