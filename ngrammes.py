@@ -17,24 +17,24 @@ class Ngramme:
         self.coocc = []
         self.initialise_ngramme()
     
-     def normaliser_mot(self, mot):
+    def normaliser_mot(self, mot):
 
-            """
-            Normalise le mot demandé par l'utilisateur.
-            On garde la casse si le mot existe tel quel dans l'index,
-            ce qui permet de conserver les noms propres (NPP).
-            Sinon, on essaie la version en minuscules.
-            """
+        """
+        Normalise le mot demandé par l'utilisateur.
+        On garde la casse si le mot existe tel quel dans l'index,
+        ce qui permet de conserver les noms propres (NPP).
+        Sinon, on essaie la version en minuscules.
+        """
 
-            if mot in self.corpus_stats.index:
-                return mot
+        if mot in self.corpus_stats.index:
+            return mot
 
-            mot_lower = mot.lower()
+        mot_lower = mot.lower()
 
-            if mot_lower in self.corpus_stats.index:
-                return mot_lower
-            
-            return None
+        if mot_lower in self.corpus_stats.index:
+            return mot_lower
+        
+        return None
 
     def initialise_ngramme(self) :
         self.nbMots = len(self.liste_mots)
