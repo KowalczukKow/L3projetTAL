@@ -256,6 +256,14 @@ class CorpusStats:
             print(f"Rang: {infos['rang']}")
             print(f"Fréquence: {infos['freq']}%")
 
+            """"
+            Je crée un boolean ici pour éviter le fait que si un mot n'a pas de collocations 
+            à droite mais en a à gauche, on affiche quand même "Pas de collocations disponibles" 
+            car on a deux if séparés pour les collocations à gauche et à droite. Si le mot n'a 
+            pas de collocations à gauche mais en a à droite, on veut quand même afficher les 
+            collocations à droite sans afficher "Pas de collocations disponibles"
+            """
+            
             existe_collocation = False
 
             if 'coocc_gauche' in infos and infos['coocc_gauche']:
