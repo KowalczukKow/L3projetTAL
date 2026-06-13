@@ -8,7 +8,8 @@ class CorpusStats:
     def __init__(self, corpus_path):
         self.corpus = corpus_path
         self.index = {}
-        self.coocc = {} #collocations prinicipales
+        self.coocc_gauche = {} #collocations à gauche
+        self.coocc_droite = {} #collocations à droite
         self.tokens = []
         self.nb_mots = 0
         self.nb_phrases = 0
@@ -125,53 +126,90 @@ class CorpusStats:
                 if tag2 != 'NPP':
                     mot2 = mot2.lower()
 
-                if mot1 not in self.coocc:
-                    self.coocc[mot1] = {}
-                if mot2 not in self.coocc[mot1]:
-                    self.coocc[mot1][mot2] = {'nb': 0, 'pmi': 0.0}
+                if mot1 not in self.coocc_droite:
+                    self.coocc_droite[mot1] = {}
+                if mot2 not in self.coocc_droite[mot1]:
+                    self.coocc_droite[mot1][mot2] = {'nb': 0, 'pmi': 0.0}
 
-                self.coocc[mot1][mot2]['nb'] += 1
+                self.coocc_droite[mot1][mot2]['nb'] += 1
+
+                if mot2 not in self.coocc_gauche:
+                        self.coocc_gauche[mot2] = {}
+                if mot1 not in self.coocc_gauche[mot2]:
+                        self.coocc_gauche[mot2][mot1] = {'nb': 0, 'pmi': 0.0}
+
+                self.coocc_gauche[mot2][mot1]['nb'] += 1
+
 
     def pmi(self):
         # calculer le PMI pour chaque paire de mots dans les cooccurrences
 
-        for mot1 in self.coocc:
+        for mot1 in self.coocc_droite:
         
-            for mot2 in self.coocc[mot1]:
+            for mot2 in self.coocc_droite[mot1]:
             
-                nb_pair = self.coocc[mot1][mot2]['nb']
+                nb_pair = self.coocc_droite[mot1][mot2]['nb']
+                nb_1 = self.index[mot1]['nb']
+                nb_2 = self.index[mot2]['nb']
+
+                pmi = math.log2(nb_pair * self.nb_mots / (nb_1 * nb_2))
+
+                self.coocc_droite[mot1][mot2]['pmi'] = pmi
+
+        for mot2 in self.coocc_gauche:
+            for mot1 in self.coocc_gauche[mot2]:
+                nb_pair = self.coocc_gauche[mot2][mot1]['nb']
                 nb_1 = self.index[mot1]['nb']
                 nb_2 = self.index[mot2]['nb']
 
                 # PMI = log2( C(w1,w2) * N / (C(w1)*C(w2)) )
-                pmi = math.log2(nb_pair * self.nb_mots / (nb_1 * nb_2))
+                pmi = math.log2(nb_pair * self.nb_mots /(nb_1 * nb_2))
 
-                self.coocc[mot1][mot2]['pmi'] = pmi
-
+                self.coocc_gauche[mot2][mot1]['pmi'] = pmi
     
 
 
     def trier_pmi(self):
         # pour chaque mot, trier les cooccurrences par PMI décroissant et stocker dans l'index
 
-        for mot1, dico in self.coocc.items():
+        for mot1, dico in self.coocc_droite.items():
             if mot1 not in self.index:
                 continue
             
-            liste = []
+            liste_droite = []
 
-            for mot2 in self.coocc[mot1]:
-                nb, pmi = self.coocc[mot1][mot2]['nb'], self.coocc[mot1][mot2]['pmi']
-                liste.append((mot2, nb, pmi))
+            for mot2 in self.coocc_droite[mot1]:
+                nb, pmi = self.coocc_droite[mot1][mot2]['nb'], self.coocc_droite[mot1][mot2]['pmi']
+                liste_droite.append((mot2, nb, pmi))
 
             # trier la liste par PMI décroissant
-            liste.sort(key=lambda x: x[2], reverse=True)
+            liste_droite.sort(key=lambda x: x[2], reverse=True)
 
             # stocker les cooccurrences triées dans l'index
-            self.index[mot1]['coocc'] = {}
+            self.index[mot1]['coocc_droite'] = {}
 
-            for mot2, nb, pmi in liste:
-                self.index[mot1]['coocc'][mot2] = {'nb': nb, 'pmi': pmi}
+            for mot2, nb, pmi in liste_droite:
+                self.index[mot1]['coocc_droite'][mot2] = {'nb': nb, 'pmi': pmi}
+        
+
+        for mot2, dico in self.coocc_gauche.items():
+
+            liste_gauche = []
+
+            for mot1 in dico:
+                nb = dico[mot1]['nb']
+                pmi = dico[mot1]['pmi']
+                liste_gauche.append((mot1, nb, pmi))
+
+            liste_gauche.sort(key=lambda x: x[2], reverse=True)
+
+            if mot2 not in self.index:
+                continue
+
+            self.index[mot2]['coocc_gauche'] = {}
+
+            for mot1, nb, pmi in liste_gauche:
+                self.index[mot2]['coocc_gauche'][mot1] = {'nb': nb, 'pmi': pmi}
 
 
     def plot_zipf(self):
@@ -218,12 +256,31 @@ class CorpusStats:
             print(f"Rang: {infos['rang']}")
             print(f"Fréquence: {infos['freq']}%")
 
-            if 'coocc' in infos and infos['coocc']:
-                print("Principales collocations (mot suivant : nb, PMI) :")
-                N = 5  # afficher les 5 meilleures collocations
-                for mot2, co in list(infos['coocc'].items())[:N]:
+            """"
+            Je crée un boolean ici pour éviter le fait que si un mot n'a pas de collocations 
+            à droite mais en a à gauche, on affiche quand même "Pas de collocations disponibles" 
+            car on a deux if séparés pour les collocations à gauche et à droite. Si le mot n'a 
+            pas de collocations à gauche mais en a à droite, on veut quand même afficher les 
+            collocations à droite sans afficher "Pas de collocations disponibles"
+            """
+            
+            existe_collocation = False
+
+            if 'coocc_gauche' in infos and infos['coocc_gauche']:
+                existe_collocation = True
+                print("\nPrincipales collocations à gauche (mot précédent : nb, PMI) :")
+
+                for mot2, co in list(infos['coocc_gauche'].items())[:5]:
                     print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
-            else:
+
+            if 'coocc_droite' in infos and infos['coocc_droite']:
+                existe_collocation = True
+                print("Principales collocations à droite (mot suivant : nb, PMI) :")
+                # afficher les 5 meilleures collocations
+                for mot2, co in list(infos['coocc_droite'].items())[:5]:
+                    print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
+
+            if not existe_collocation:
                 print("Pas de collocations disponibles.")
 
 
@@ -388,18 +445,36 @@ class CorpusStats:
         sequence = input("Entrez la suite de mots : ")
         
         ngramme = Ngramme(self, sequence)
+        if ngramme.nbOcc == 0:
+            print(f"La suite '{sequence}' n'est pas trouvée dans le corpus.")
+            return
 
-        print(f"Mot: ", sequence)
+        print(f"Suite recherchée: ", sequence)
         print(f"Nombre d'occurrences: ", ngramme.nbOcc)
         print(f"Fréquence: ", ngramme.freq, "%")
         print("Principales collocations (mot suivant : nb, PMI) :")
+
+    
+        # On peut choisir d'afficher aussi les collocations à gauche.
+        if ngramme.coocc[0]:
+            print("Principales collocations à gauche (mot précédent : nb) :")
+            for mot in list(ngramme.coocc[0].keys())[:5]:
+                print(mot, ":", ngramme.coocc[0][mot]['nb'])
+        else:
+            print("\nPas de collocations à gauche disponibles.")
+
         for mot in ngramme.coocc[1].keys():
-            print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
+            print("Principales collocations à droite (mot suivant : nb, PMI) :")
+            for mot in list(ngramme.coocc[1].keys())[:5]:
+                print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
         
+        else:
+            print("\nPas de collocations à droite disponibles.")
+
         kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
 
         if kwic_choix == 'oui':
-            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 3) : ") or 3)
+            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
 
             kwic_results = ngramme.kwic_suites(size)
 
