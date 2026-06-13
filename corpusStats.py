@@ -135,10 +135,10 @@ class CorpusStats:
 
                 if mot2 not in self.coocc_gauche:
                         self.coocc_gauche[mot2] = {}
-                    if mot1 not in self.coocc_gauche[mot2]:
+                if mot1 not in self.coocc_gauche[mot2]:
                         self.coocc_gauche[mot2][mot1] = {'nb': 0, 'pmi': 0.0}
 
-                    self.coocc_gauche[mot2][mot1]['nb'] += 1
+                self.coocc_gauche[mot2][mot1]['nb'] += 1
 
 
     def pmi(self):
@@ -256,18 +256,23 @@ class CorpusStats:
             print(f"Rang: {infos['rang']}")
             print(f"Fréquence: {infos['freq']}%")
 
+            existe_collocation = False
+
             if 'coocc_gauche' in infos and infos['coocc_gauche']:
+                existe_collocation = True
                 print("\nPrincipales collocations à gauche (mot précédent : nb, PMI) :")
 
                 for mot2, co in list(infos['coocc_gauche'].items())[:5]:
                     print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
 
             if 'coocc_droite' in infos and infos['coocc_droite']:
+                existe_collocation = True
                 print("Principales collocations à droite (mot suivant : nb, PMI) :")
                 # afficher les 5 meilleures collocations
                 for mot2, co in list(infos['coocc_droite'].items())[:5]:
                     print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
-            else:
+
+            if not existe_collocation:
                 print("Pas de collocations disponibles.")
 
 
@@ -451,7 +456,9 @@ class CorpusStats:
             print("\nPas de collocations à gauche disponibles.")
 
         for mot in ngramme.coocc[1].keys():
-            print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
+            print("Principales collocations à droite (mot suivant : nb, PMI) :")
+            for mot in list(ngramme.coocc[1].keys())[:5]:
+                print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
         
         else:
             print("\nPas de collocations à droite disponibles.")
@@ -459,7 +466,7 @@ class CorpusStats:
         kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
 
         if kwic_choix == 'oui':
-            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 3) : ") or 3)
+            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
 
             kwic_results = ngramme.kwic_suites(size)
 

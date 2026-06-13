@@ -17,19 +17,46 @@ class Ngramme:
         self.coocc = []
         self.initialise_ngramme()
     
+     def normaliser_mot(self, mot):
+
+            """
+            Normalise le mot demandé par l'utilisateur.
+            On garde la casse si le mot existe tel quel dans l'index,
+            ce qui permet de conserver les noms propres (NPP).
+            Sinon, on essaie la version en minuscules.
+            """
+
+            if mot in self.corpus_stats.index:
+                return mot
+
+            mot_lower = mot.lower()
+
+            if mot_lower in self.corpus_stats.index:
+                return mot_lower
+            
+            return None
 
     def initialise_ngramme(self) :
         self.nbMots = len(self.liste_mots)
 
         if self.nbMots == 0 :
             print("Requête vide")
+            return
+
+        mots_normalises = []
+
+        for mot in self.liste_mots :
+            mot_norm = self.normaliser_mot(mot)
+            if mot_norm is None :
+                print(f"Le mot '{mot}' n'est pas trouvé dans le corpus.")
+                return
+            mots_normalises.append(mot_norm)
+
+        self.liste_mots = mots_normalises
 
         mots_ids_phrases = []
 
         for mot in self.liste_mots :
-            if mot not in self.corpus_stats.index :
-                print(f"Le mot '{mot}' n'est pas trouvé dans le corpus.")
-                return
             # on utilise set pour transformer la liste en ensemble
             mots_ids_phrases.append(set(self.corpus_stats.index[mot]['n_phrase']))
 
@@ -51,24 +78,6 @@ class Ngramme:
         self.calc_freq()
         self.cooccurrences_suite()
 
-        def normaliser_mot(self, mot):
-
-            """
-            Normalise le mot demandé par l'utilisateur.
-            On garde la casse si le mot existe tel quel dans l'index,
-            ce qui permet de conserver les noms propres (NPP).
-            Sinon, on essaie la version en minuscules.
-            """
-
-            if mot in self.corpus_stats.index:
-                return mot
-
-            mot_lower = mot.lower()
-
-            if mot_lower in self.corpus_stats.index:
-                return mot_lower
-            
-            return None
     
     
     def sort_positions_n_grammes(self, positions_p, phrases_communes) :
@@ -143,6 +152,9 @@ class Ngramme:
 
                     mot, tag = self.corpus_stats.parser_token(token)
 
+                    if tag != 'NPP':
+                        mot = mot.lower()
+                        
                     if mot not in self.coocc[1] :
                         self.coocc[1][mot] = {'nb': 0, 'pmi': 0.0}
 
