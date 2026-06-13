@@ -24,10 +24,12 @@ class Ngramme:
         if self.nbMots == 0 :
             print("Requête vide")
 
-        occurences = []
         mots_ids_phrases = []
 
         for mot in self.liste_mots :
+            if mot not in self.corpus_stats.index :
+                print(f"Le mot '{mot}' n'est pas trouvé dans le corpus.")
+                return
             # on utilise set pour transformer la liste en ensemble
             mots_ids_phrases.append(set(self.corpus_stats.index[mot]['n_phrase']))
 
@@ -48,6 +50,25 @@ class Ngramme:
         self.sort_positions_n_grammes(positions_p, phrases_communes)
         self.calc_freq()
         self.cooccurrences_suite()
+
+        def normaliser_mot(self, mot):
+
+            """
+            Normalise le mot demandé par l'utilisateur.
+            On garde la casse si le mot existe tel quel dans l'index,
+            ce qui permet de conserver les noms propres (NPP).
+            Sinon, on essaie la version en minuscules.
+            """
+
+            if mot in self.corpus_stats.index:
+                return mot
+
+            mot_lower = mot.lower()
+
+            if mot_lower in self.corpus_stats.index:
+                return mot_lower
+            
+            return None
     
     
     def sort_positions_n_grammes(self, positions_p, phrases_communes) :
@@ -73,7 +94,11 @@ class Ngramme:
 
     def calc_freq(self) :
         self.nb_total_corpus = self.corpus_stats.nb_mots - self.nbOcc * (self.nbMots - 1)
-        self.freq = round(self.nbOcc / self.nb_total_corpus * 100, 4)
+
+        if self.nb_total_corpus > 0:
+            self.freq = round(self.nbOcc / self.nb_total_corpus * 100, 4)
+        else:
+            self.freq = 0.0
     
 
     def cooccurrences_suite(self) : 
@@ -88,14 +113,17 @@ class Ngramme:
                 pos1 = self.positions_n_grammes[id_phrase][i][0]
                 
                 # on vérifie s'il sagit pas du premier mot du corpus
-                if not (id_phrase == 0 and pos1 == 1) : 
+                if not (id_phrase == 1 and pos1 == 1) : 
                     token = ""
                     if pos1 == 1 :
                         token = self.corpus_stats.sentences[id_phrase-2][-1]
                     else :
                         token = self.corpus_stats.sentences[id_phrase-1][pos1-2]
 
-                    mot, tag = token.split('/', 1)
+                    mot, tag = self.corpus_stats.parser_token(token)
+
+                    if tag != 'NPP':
+                        mot = mot.lower()
 
                     if mot not in self.coocc[0] :
                         self.coocc[0][mot] = {'nb': 0, 'pmi': 0.0}
@@ -113,7 +141,7 @@ class Ngramme:
                     else :
                         token = self.corpus_stats.sentences[id_phrase-1][pos2]
 
-                    mot, tag = token.split('/', 1)
+                    mot, tag = self.corpus_stats.parser_token(token)
 
                     if mot not in self.coocc[1] :
                         self.coocc[1][mot] = {'nb': 0, 'pmi': 0.0}
@@ -137,7 +165,16 @@ class Ngramme:
         for mot in self.coocc[1] :
 
             nb_pair = self.coocc[1][mot]['nb']
+
+            if mot not in self.corpus_stats.index :
+                print(f"Le mot '{mot}' n'est pas trouvé dans le corpus.")
+                continue
+
             nb_occ_mot = self.corpus_stats.index[mot]['nb'] - self.nbOcc * self.verif_mot_pres(mot)
+
+            if self.nbOcc == 0 or nb_occ_mot <= 0 :
+                continue
+
             pmi = math.log2(nb_pair * self.nb_total_corpus / (self.nbOcc * nb_occ_mot))
 
             self.coocc[1][mot]['pmi'] = pmi
@@ -163,7 +200,7 @@ class Ngramme:
             self.coocc[1][mot] = {'nb': nb, 'pmi': pmi}
 
     
-    def kwic_suites(self, size = 3) :
+    def kwic_suites(self, size = 5) : # car les autres fonctions kwic ont 5 par défaut, donc par correspondance je corrige
         results = [] 
         
         for id_phrase in self.positions_n_grammes.keys() :
