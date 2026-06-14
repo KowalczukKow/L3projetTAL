@@ -3,13 +3,26 @@ from reconaissance import expr
 from corpusStats import CorpusStats
 
 def main():
-    chemin_corpus = "corpus/sequoia-9.2.fine.brown"
     automate = re.compile(expr)
 
-    print("Chargement du corpus...")
-    stats = CorpusStats(chemin_corpus)
+    print("=== Chargement du corpus ===")
 
-    stats.read_corpus(automate, True)
+    chemin_corpus = input("Entrez le chemin du corpus : ").strip()
+
+    while not chemin_corpus:
+        print("Aucun chemin de corpus fourni.")
+        chemin_corpus = input("Entrez le chemin du corpus : ").strip()
+
+    print(f"\nCorpus sélectionné : {chemin_corpus}")
+    print("Chargement du corpus...")
+
+    try: 
+        stats = CorpusStats(chemin_corpus)
+        stats.read_corpus(automate, True)
+
+    except Exception as e:
+        print(f"Erreur : le fichier '{chemin_corpus}' est introuvable.")
+        return
 
     while True:
         print("\n" + "="*40)
