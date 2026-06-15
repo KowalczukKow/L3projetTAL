@@ -16,11 +16,12 @@ def main():
         print("MENU PRINCIPAL - CONCORDANCIER")
         print("1. Informations générales du corpus")
         print("2. Graphe de Zipf")
-        print("3. Rechercher un mot (fréquence, rang, 5 collocations les plus fréquentes, KWIC optionnel)")
-        print("4. Rechercher une suite de mots")
-        print("5. Rechercher une expression régulière (KWIC optionnel)")
-        # print("5. n-gram")
+        print("3. Afficher les statistiques d'un tag (fréquence, rang, 10 formes les plus fréquentes)")
+        print("4. Rechercher un mot (fréquence, rang, 5 collocations les plus fréquentes, KWIC optionnel)")
+        print("5. Rechercher une suite de mots")
+        print("6. Rechercher une expression régulière (KWIC optionnel)")
         print("0. Quitter")
+
         choix = input("Votre choix : ").strip()
         
         if choix == '0':
@@ -31,16 +32,15 @@ def main():
         elif choix == '2':
             stats.plot_zipf()
         elif choix == '3':
-            stats.requete_mot()
+            stats.requete_tag()
         elif choix == '4':
-            stats.requete_n_gramme()
+            stats.requete_mot()
         elif choix == '5':
+            stats.requete_n_gramme()
+        elif choix == '6':
             stats.requete_regex()
-        # elif choix == '5':
-
         else:
             print("Choix invalide, veuillez réessayer.")
     
-
 if __name__ == "__main__":
     main()
