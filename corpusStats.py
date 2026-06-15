@@ -350,7 +350,7 @@ class CorpusStats:
                 break
 
     def requete_tag(self):
-        tag = input("Entrez un tag (ex: N, V, ADJ, ADV, NPP, PONCT) : ").strip()
+        tag = input("Entrez un tag (ex: NC, NPP, V, ADJ, ADV, PONCT) : ").strip()
 
         if tag not in self.index_tags:
             print(f"Le tag '{tag}' n'est pas trouvé dans le corpus.")
