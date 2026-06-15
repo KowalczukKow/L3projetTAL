@@ -20,8 +20,8 @@ def main():
         print("4. Rechercher un mot (fréquence, rang, 5 collocations les plus fréquentes, KWIC optionnel)")
         print("5. Rechercher une suite de mots")
         print("6. Rechercher une expression régulière (KWIC optionnel)")
-        # print("5. n-gram")
         print("0. Quitter")
+
         choix = input("Votre choix : ").strip()
         
         if choix == '0':
@@ -39,11 +39,8 @@ def main():
             stats.requete_n_gramme()
         elif choix == '6':
             stats.requete_regex()
-        # elif choix == '5':
-
         else:
             print("Choix invalide, veuillez réessayer.")
     
-
 if __name__ == "__main__":
     main()

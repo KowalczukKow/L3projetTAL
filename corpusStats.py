@@ -72,6 +72,7 @@ class CorpusStats:
         self.cooccurrences()
         self.pmi()
         self.trier_pmi()
+        self.stats_tags()
 
     def info_generale(self, automate=None, test=False):
         if test == True and automate: 
@@ -251,8 +252,8 @@ class CorpusStats:
         for tag, infos in self.index_tags.items():
             nb_occurrences = infos['nb_occurrences']
 
-            liste_formes = list(infos['formes'].keys())
-            liste_formes.sort(key=lambda x: infos['formes'][x], reverse=True)
+            liste_formes = list(infos['formes'].items())
+            liste_formes.sort(key=lambda x: x[1], reverse=True)
 
             infos['nb_formes'] = len(liste_formes)
             infos['formes_triees'] = []
