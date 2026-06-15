@@ -8,6 +8,7 @@ class CorpusStats:
     def __init__(self, corpus_path):
         self.corpus = corpus_path
         self.index = {}
+        self.index_tags = {} # pour les statistiques sur les tags
         self.coocc_gauche = {} #collocations à gauche
         self.coocc_droite = {} #collocations à droite
         self.tokens = []
@@ -15,6 +16,7 @@ class CorpusStats:
         self.nb_phrases = 0
         self.nb_formes = 0
         self.sentences = [] # pour le KWIC
+
 
     def read_corpus(self, automate=None, test=False):
         nb_valides = 0
@@ -228,6 +230,51 @@ class CorpusStats:
         plt.loglog(rangs, frequences, 'o', markersize=3)
         plt.show()
 
+    # Calculer les statistiques des mots ayant le même tag (ex: tous les verbes, tous les noms propres, etc.)
+    def stats_tags(self):
+        self.index_tags = {}
+
+        for mot, infos in self.index.items():
+            for tag in infos['tags']:
+                if tag not in self.index_tags:
+                    self.index_tags[tag] = {
+                        'nb_occurrences': 0,
+                        'formes': {}
+                    }
+                self.index_tags[tag]['nb_occurrences'] += 1
+
+                if mot not in self.index_tags[tag]['formes']:
+                    self.index_tags[tag]['formes'][mot] = 0
+
+                self.index_tags[tag]['formes'][mot] += 1
+
+        for tag, infos in self.index_tags.items():
+            nb_occurrences = infos['nb_occurrences']
+
+            liste_formes = list(infos['formes'].keys())
+            liste_formes.sort(key=lambda x: infos['formes'][x], reverse=True)
+
+            infos['nb_formes'] = len(liste_formes)
+            infos['formes_triees'] = []
+
+            rang = 0
+            dernier_nb = None
+
+            for i, (mot, nb) in enumerate(liste_formes, start=1):
+                if nb != dernier_nb:
+                    rang = i
+                    dernier_nb = nb
+                freq = round(nb / nb_occurrences * 100, 4)
+
+                infos['formes_triees'].append({
+                    'mot': mot,
+                    'nb': nb,
+                    'freq': freq,
+                    'rang': rang
+                })
+
+            
+
     def requete_mot(self):
         while True:
             mot = input("Entrez un mot (ou appuyer sur ENTREE pour quitter) : ")
@@ -301,8 +348,26 @@ class CorpusStats:
                 print("Fin de la consultation.")
                 break
 
-    # KWIC
+    def requete_tag(self):
+        tag = input("Entrez un tag (ex: N, V, ADJ, ADV, NPP, PONCT) : ").strip()
 
+        if tag not in self.index_tags:
+            print(f"Le tag '{tag}' n'est pas trouvé dans le corpus.")
+            return
+        
+        infos = self.index_tags[tag]
+
+        print(f"\nTag: {tag}")
+        print(f"Nombre d'occurrences: {infos['nb_occurrences']}")
+        print(f"Nombre de formes distinctes: {infos['nb_formes']}")
+        print(f"Fréquence dans le corpus : {round(infos['nb_occurrences'] / self.nb_mots * 100, 4)}%")
+        
+        print(f"Formes les 10 plus fréquentes pour ce tag (mot : nb, freq, rang) :")
+        for forme in infos['formes_triees'][:10]:
+            print(f"{forme['mot']} : {forme['nb']}, {forme['freq']}%, rang {forme['rang']}")
+
+
+    # KWIC
     def kwic_words(self, word, size = 5, case_sensitive = False):
 
         if case_sensitive:
