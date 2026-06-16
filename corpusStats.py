@@ -514,7 +514,7 @@ class CorpusStats:
         demande = []
         suite_cherchee = ''
 
-        mot = '\S+/'
+        mot = '\S+'
 
         for motag in pattern :
 
@@ -523,7 +523,7 @@ class CorpusStats:
 
             if regex.fullmatch(motag) :
                 demande.append((motag, True))
-                suite_cherchee += mot + motag
+                suite_cherchee += mot + '/' + motag
             else :
                 demande.append((motag.lower(), False))
                 suite_cherchee += motag.lower() + '/' + mot
