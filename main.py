@@ -1,6 +1,7 @@
 import re
 from reconaissance import expr
 from corpusStats import CorpusStats
+from exprMixte import requete_mixte
 
 def main():
     chemin_corpus = "corpus/sequoia-9.2.fine.brown"
@@ -43,7 +44,7 @@ def main():
             if choix2 == '1' :
                 stats.requete_n_gramme()
             elif choix2 == '2':
-                stats.requete_mixte()
+                requete_mixte(stats)
         elif choix == '6':
             stats.requete_regex()
         else:
