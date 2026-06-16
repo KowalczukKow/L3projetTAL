@@ -524,9 +524,9 @@ class CorpusStats:
             print(f"La suite '{sequence}' n'est pas trouvée dans le corpus.")
             return
 
-        print(f"\nSuite recherchée: ", sequence)
-        print(f"Nombre d'occurrences: ", ngramme.nbOcc)
-        print(f"Fréquence: ", ngramme.freq, "%")
+        print(f"\nSuite recherchée : ", sequence)
+        print(f"Nombre d'occurrences : ", ngramme.nbOcc)
+        print(f"Fréquence : ", ngramme.freq, "%")
         print("Principales collocations (mot suivant : nb, PMI) :")
 
     

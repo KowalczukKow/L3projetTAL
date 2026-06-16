@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 def requete_mixte(corpus) :
 
     regex = re.compile(tag_expr)
-    pattern = input("Votre choix : ").strip().split()
+    sequence = input("Entrez la suite : ")
+    pattern = sequence.strip().split()
 
     demande = []
     suite_cherchee = ''
@@ -30,13 +31,14 @@ def requete_mixte(corpus) :
     len_suite = len(demande)
 
     indices = []
+    ph_pos = [] # numéros des phrases et positions dans les phrases
 
     motag1, type = demande[0]
 
     for i in range(len(corpus.tokens) - len_suite + 1) :
         valid = True
         if corpus.tokens[i][type] == motag1 :
-            print(corpus.tokens[i][type])
+            #print(corpus.tokens[i][type])
             for j in range(1, len_suite) : 
                 # case à corriger
                 if corpus.tokens[i+j][demande[j][1]] != demande[j][0] :
@@ -44,18 +46,25 @@ def requete_mixte(corpus) :
                     #print(demande[j][0])
                     valid = False
                     break
-                else :
-                    print(corpus.tokens[i+j][demande[j][1]])
+                #else :
+                    #print(corpus.tokens[i+j][demande[j][1]])
             if valid :
                 indices.append(i)
-                print("valid\n")
+                ph_pos.append(phrase_et_position(corpus, i))
+                #print("valid\n")
 
-    print("\n",len(indices))
+    affiche_infos(sequence, len(indices))
+
 
 def phrase_et_position(corpus, indice) :
     for i, id_deb in enumerate(corpus.id_debut_sentences) :
         if indice < id_deb :
             return i - 1, indice - corpus.id_debut_sentences[i-1]
+        
+
+def affiche_infos(sequence, nbOcc) :
+    print(f"\nSuite recherchée : ", sequence)
+    print(f"Nombre d'occurrences : ", nbOcc)
 
 if __name__ == "__main__":
     import main

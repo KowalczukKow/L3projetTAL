@@ -39,7 +39,7 @@ def main():
         elif choix == '5':
             print("Entrez :")
             print("1. Pour une suite des mots")
-            print("2. pour une suite des tags")
+            print("2. Pour une autre suite")
             choix2 = input("Votre choix : ").strip()
             if choix2 == '1' :
                 stats.requete_n_gramme()
