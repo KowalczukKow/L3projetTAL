@@ -7,13 +7,21 @@ def main():
 
     print("=== Chargement du corpus ===")
 
-    chemin_corpus = input("Entrez le chemin du corpus : ").strip()
+    chemin_corpus = "corpus/sequoia-9.2.fine.brown"
 
-    while not chemin_corpus:
-        print("Aucun chemin de corpus fourni.")
+    print(f"Le chemin du corpus actuel : {chemin_corpus}")
+    choix_corpus = input("Voulez-vous changer le corpus (oui/non) : ").strip()
+
+    if choix_corpus == 'oui' :
+
         chemin_corpus = input("Entrez le chemin du corpus : ").strip()
 
-    print(f"\nCorpus sélectionné : {chemin_corpus}")
+        while not chemin_corpus:
+            print("Aucun chemin de corpus fourni.")
+            chemin_corpus = input("Entrez le chemin du corpus : ").strip()
+
+        print(f"\nCorpus sélectionné : {chemin_corpus}")
+        
     print("Chargement du corpus...")
 
     try: 
