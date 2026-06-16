@@ -1,6 +1,6 @@
 import math
 import re
-from reconaissance import expr
+from reconaissance import tag_expr
 from ngrammes import Ngramme
 import matplotlib.pyplot as plt
 
@@ -505,6 +505,32 @@ class CorpusStats:
                     })
 
         return results
+    
+    def requete_mixte(self) :
+
+        regex = re.compile(tag_expr)
+        pattern = input("Votre choix : ").strip().split()
+
+        demande = []
+        suite_cherchee = ''
+
+        mot = '\S+/'
+
+        for motag in pattern :
+
+            if suite_cherchee != '' :
+                suite_cherchee += ' '
+
+            if regex.fullmatch(motag) :
+                demande.append((motag, True))
+                suite_cherchee += mot + motag
+            else :
+                demande.append((motag.lower(), False))
+                suite_cherchee += motag.lower() + '/' + mot
+
+        print(suite_cherchee)
+
+
     
     # N-GRAMMES
     def requete_n_gramme(self) :

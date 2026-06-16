@@ -36,7 +36,9 @@ class Ngramme:
         
         return None
 
-    def initialise_ngramme(self) :
+    # mode = 1 --> mots
+    # mode = 2 --> tags
+    def initialise_ngramme(self, mode=1) :
         self.nbMots = len(self.liste_mots)
 
         if self.nbMots == 0 :
@@ -56,9 +58,14 @@ class Ngramme:
 
         mots_ids_phrases = []
 
-        for mot in self.liste_mots :
-            # on utilise set pour transformer la liste en ensemble
-            mots_ids_phrases.append(set(self.corpus_stats.index[mot]['n_phrase']))
+        if mode == 2 :
+            for mot in self.liste_mots :
+                # on utilise set pour transformer la liste en ensemble
+                mots_ids_phrases.append(set(self.corpus_stats.index_tags[mot]['n_phrase']))
+        else :
+            for mot in self.liste_mots :
+                # on utilise set pour transformer la liste en ensemble
+                mots_ids_phrases.append(set(self.corpus_stats.index[mot]['n_phrase']))
 
         phrases_communes = set.intersection(*mots_ids_phrases)
 
