@@ -16,6 +16,7 @@ class CorpusStats:
         self.nb_phrases = 0
         self.nb_formes = 0
         self.sentences = [] # pour le KWIC
+        self.id_debut_sentences = []
 
 
     def read_corpus(self, automate=None, test=False):
@@ -28,13 +29,18 @@ class CorpusStats:
                 if not line:
                     continue
 
+                if self.nb_phrases != 0 :
+                    self.id_debut_sentences.append(len(self.sentences[-1]) + self.id_debut_sentences[-1])
+                else :
+                    self.id_debut_sentences.append(0)
+
                 words = line.split()   # les mots sont sous la forme "mot/tag"
                 self.sentences.append(words)   # stocke la phrase originale pour le KWIC
                 self.nb_phrases += 1
 
                 # parcourir tous les mots de la phrase
                 for pos, token in enumerate(words, start=1):   # pos à partir de 1
-                    self.tokens.append(token)
+                    self.tokens.append(self.parser_token(token))
                     self.nb_mots += 1
 
                     if automate :
@@ -414,6 +420,7 @@ class CorpusStats:
             print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
 
 
+    # REGEX
     def requete_regex(self):
         import re
         pattern = input("Entrez l'expression régulière : ").strip()
@@ -514,21 +521,46 @@ class CorpusStats:
         demande = []
         suite_cherchee = ''
 
-        mot = '\S+'
+        #mot = '\S+'
 
         for motag in pattern :
 
-            if suite_cherchee != '' :
-                suite_cherchee += ' '
+            #if suite_cherchee != '' :
+            #    suite_cherchee += ' '
 
             if regex.fullmatch(motag) :
-                demande.append((motag, True))
-                suite_cherchee += mot + '/' + motag
+                demande.append((motag, 1)) # 1 s'il s'agit d'un tag
+                #suite_cherchee += mot + '/' + motag
             else :
-                demande.append((motag.lower(), False))
-                suite_cherchee += motag.lower() + '/' + mot
+                demande.append((motag.lower(), 0))
+                #suite_cherchee += motag.lower() + '/' + mot
 
-        print(suite_cherchee)
+        #regex_cherchee = re.compile(suite_cherchee, re.IGNORECASE)
+        len_suite = len(demande)
+
+        indices = []
+
+        motag1, type = demande[0]
+
+        for i in range(len(self.tokens) - len_suite + 1) :
+            valid = True
+            if self.tokens[i][type] == motag1 :
+                print(self.tokens[i][type])
+                for j in range(1, len_suite) : 
+                    # case à corriger
+                    if self.tokens[i+j][demande[j][1]] != demande[j][0] :
+                        #print(self.tokens[i+j][demande[j][1]])
+                        #print(demande[j][0])
+                        valid = False
+                        break
+                    else :
+                        print(self.tokens[i+j][demande[j][1]])
+                if valid :
+                    indices.append(i)
+                    print("valid\n")
+
+        print("\n",len(indices))
+        #print(suite_cherchee)
 
 
     
@@ -588,6 +620,8 @@ class CorpusStats:
         # Par défaut, elle suppose le format mot/tag
         if '/' in token:
             mot, tag = token.rsplit('/', 1)
+            if tag != 'NPP' :
+                mot = mot.lower()
         else:
             mot, tag = token, None  # si pas de tag, on retourne None
         return mot, tag
