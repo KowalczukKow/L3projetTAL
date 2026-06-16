@@ -1,8 +1,5 @@
-import math
 import re
 from reconaissance import tag_expr
-from ngrammes import Ngramme
-import matplotlib.pyplot as plt
 
 def requete_mixte(corpus) :
 
@@ -11,23 +8,14 @@ def requete_mixte(corpus) :
     pattern = sequence.strip().split()
 
     demande = []
-    suite_cherchee = ''
-
-    #mot = '\S+'
 
     for motag in pattern :
 
-        #if suite_cherchee != '' :
-        #    suite_cherchee += ' '
-
         if regex.fullmatch(motag) :
             demande.append((motag, 1)) # 1 s'il s'agit d'un tag
-            #suite_cherchee += mot + '/' + motag
         else :
             demande.append((motag.lower(), 0))
-            #suite_cherchee += motag.lower() + '/' + mot
 
-    #regex_cherchee = re.compile(suite_cherchee, re.IGNORECASE)
     len_suite = len(demande)
 
     indices = []
@@ -38,20 +26,13 @@ def requete_mixte(corpus) :
     for i in range(len(corpus.tokens) - len_suite + 1) :
         valid = True
         if corpus.tokens[i][type] == motag1 :
-            #print(corpus.tokens[i][type])
             for j in range(1, len_suite) : 
-                # case à corriger
                 if corpus.tokens[i+j][demande[j][1]] != demande[j][0] :
-                    #print(corpus.tokens[i+j][demande[j][1]])
-                    #print(demande[j][0])
                     valid = False
                     break
-                #else :
-                    #print(corpus.tokens[i+j][demande[j][1]])
             if valid :
                 indices.append(i)
                 ph_pos.append(phrase_et_position(corpus, i))
-                #print("valid\n")
 
     affiche_infos(sequence, len(indices), cooccurences(corpus.tokens, indices, len_suite, 1))
 
