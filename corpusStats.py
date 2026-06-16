@@ -515,7 +515,7 @@ class CorpusStats:
             print(f"La suite '{sequence}' n'est pas trouvée dans le corpus.")
             return
 
-        print(f"Suite recherchée: ", sequence)
+        print(f"\nSuite recherchée: ", sequence)
         print(f"Nombre d'occurrences: ", ngramme.nbOcc)
         print(f"Fréquence: ", ngramme.freq, "%")
         print("Principales collocations (mot suivant : nb, PMI) :")
@@ -523,14 +523,14 @@ class CorpusStats:
     
         # On peut choisir d'afficher aussi les collocations à gauche.
         if ngramme.coocc[0]:
-            print("Principales collocations à gauche (mot précédent : nb) :")
+            print("\nPrincipales collocations à gauche (mot précédent : nb) :")
             for mot in list(ngramme.coocc[0].keys())[:5]:
                 print(mot, ":", ngramme.coocc[0][mot]['nb'])
         else:
             print("\nPas de collocations à gauche disponibles.")
 
-        for mot in ngramme.coocc[1].keys():
-            print("Principales collocations à droite (mot suivant : nb, PMI) :")
+        if ngramme.coocc[1]:
+            print("\nPrincipales collocations à droite (mot suivant : nb, PMI) :")
             for mot in list(ngramme.coocc[1].keys())[:5]:
                 print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
         
