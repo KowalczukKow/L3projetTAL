@@ -560,9 +560,11 @@ class CorpusStats:
                     print("valid\n")
 
         print("\n",len(indices))
-        #print(suite_cherchee)
 
-
+    def phrase_et_position(self, indice) :
+        for i, id_deb in enumerate(self.id_debut_sentences) :
+            if indice < id_deb :
+                return i - 1, indice - self.id_debut_sentences[i-1]
     
     # N-GRAMMES
     def requete_n_gramme(self) :
@@ -620,8 +622,7 @@ class CorpusStats:
         # Par défaut, elle suppose le format mot/tag
         if '/' in token:
             mot, tag = token.rsplit('/', 1)
-            if tag != 'NPP' :
-                mot = mot.lower()
+            mot = mot.lower()
         else:
             mot, tag = token, None  # si pas de tag, on retourne None
         return mot, tag
