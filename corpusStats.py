@@ -1,7 +1,6 @@
 import math
 import re
 from reconaissance import tag_expr
-from ngrammes import Ngramme
 import matplotlib.pyplot as plt
 
 class CorpusStats:
@@ -513,50 +512,6 @@ class CorpusStats:
 
         return results
     
-
-    
-    # N-GRAMMES
-    def requete_n_gramme(self) :
-        sequence = input("Entrez la suite de mots : ")
-        
-        ngramme = Ngramme(self, sequence)
-        if ngramme.nbOcc == 0:
-            print(f"La suite '{sequence}' n'est pas trouvée dans le corpus.")
-            return
-
-        print(f"\nSuite recherchée : ", sequence)
-        print(f"Nombre d'occurrences : ", ngramme.nbOcc)
-        print(f"Fréquence : ", ngramme.freq, "%")
-        print("Principales collocations (mot suivant : nb, PMI) :")
-
-    
-        # On peut choisir d'afficher aussi les collocations à gauche.
-        if ngramme.coocc[0]:
-            print("\nPrincipales collocations à gauche (mot précédent : nb) :")
-            for mot in list(ngramme.coocc[0].keys())[:5]:
-                print(mot, ":", ngramme.coocc[0][mot]['nb'])
-        else:
-            print("\nPas de collocations à gauche disponibles.")
-
-        if ngramme.coocc[1]:
-            print("\nPrincipales collocations à droite (mot suivant : nb, PMI) :")
-            for mot in list(ngramme.coocc[1].keys())[:5]:
-                print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
-        
-        else:
-            print("\nPas de collocations à droite disponibles.")
-
-        kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
-
-        if kwic_choix == 'oui':
-            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
-
-            kwic_results = ngramme.kwic_suites(size)
-
-            if kwic_results:
-                ngramme.afficher_kwic_suite(kwic_results)
-            else:
-                print("Aucun contexte trouvé.")
 
     """
     Pour rendre votre concordancier relativement indépendant du format du corpus, il faut découpler 
