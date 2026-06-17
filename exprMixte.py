@@ -111,7 +111,28 @@ def calc_pmi(corpus, nb_occ, liste_motags, nb_total_corpus, coocc, mode) :
             pmi = math.log2(nb_pair * nb_total_corpus / (nb_occ * nb_occ_motag))
             coocc[i][motag]['pmi'] = pmi
 
+    return sort_pmi(coocc)
+
+
+def sort_pmi(coocc) :
+    liste = []
+
+    for i in range(2) :
+        for motag in coocc[i]:
+            nb, pmi = coocc[i][motag]['nb'], coocc[i][motag]['pmi']
+            liste.append((motag, nb, pmi))
+
+        # trier la liste par PMI décroissant
+        liste.sort(key=lambda x: x[2], reverse=True)
+
+        # stocker les cooccurrences triées dans l'index
+        coocc[i] = {}
+
+        for motag, nb, pmi in liste:
+            coocc[i][motag] = {'nb': nb, 'pmi': pmi}
+    
     return coocc
+
 
 def verif_motag_pres(liste_motags, motag_a_verif) :
     compteur = 0
