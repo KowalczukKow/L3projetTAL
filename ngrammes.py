@@ -189,7 +189,7 @@ class Ngramme:
                 print(f"Le mot '{mot}' n'est pas trouvé dans le corpus.")
                 continue
 
-            nb_occ_mot = self.corpus_stats.index[mot]['nb'] - self.nbOcc * self.verif_mot_pres(mot)
+            nb_occ_mot = self.corpus_stats.index[mot]['nb_occ'] - self.nbOcc * self.verif_mot_pres(mot)
 
             if self.nbOcc == 0 or nb_occ_mot <= 0 :
                 continue

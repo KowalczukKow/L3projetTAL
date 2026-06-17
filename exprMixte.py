@@ -53,6 +53,7 @@ def calc_freq(corpus, nb_occ, nb_mots) :
     
     return 0.0
         
+#def calc_pmi(corpus, mode ) 
 
 # mode = 0 pour les mots, mode = 1 pour les tags      
 def cooccurences(tokens, indices, nb_mots, mode=0) :
@@ -64,20 +65,20 @@ def cooccurences(tokens, indices, nb_mots, mode=0) :
 
     for id in indices : 
         if id != 0 :
-            mot = tokens[id-1][mode]
+            motag = tokens[id-1][mode]
 
-            if mot not in coocc[0] :
-                coocc[0][mot] = {'nb': 0}
+            if motag not in coocc[0] :
+                coocc[0][motag] = {'nb': 0}
 
-            coocc[0][mot]['nb'] += 1
+            coocc[0][motag]['nb'] += 1
         
         if id + nb_mots - 1 != max_id_tokens :
-            mot = tokens[id+nb_mots][mode]
+            motag = tokens[id+nb_mots][mode]
 
-            if mot not in coocc[1] :
-                coocc[1][mot] = {'nb': 0}
+            if motag not in coocc[1] :
+                coocc[1][motag] = {'nb': 0}
 
-            coocc[1][mot]['nb'] += 1
+            coocc[1][motag]['nb'] += 1
     
     return coocc
 

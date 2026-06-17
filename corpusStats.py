@@ -58,13 +58,13 @@ class CorpusStats:
                     # si le mot n'est pas encore dans l'index, l'ajouter
                     if mot not in self.index:
                         self.index[mot] = {
-                            'nb': 0,            # le nombre d'occurrences
+                            'nb_occ': 0, # le nombre d'occurrences
                             'tags': [],         # les tags associés
                             'n_phrase': [],     # les numéros de phrase où il apparaît
                             'pos_phrase': []    # les positions dans la phrase où il apparaît
                         }
                     # renouveler les informations pour ce mot
-                    self.index[mot]['nb'] += 1
+                    self.index[mot]['nb_occ'] += 1
                     self.index[mot]['tags'].append(tag)
                     self.index[mot]['n_phrase'].append(id_phrase)
                     self.index[mot]['pos_phrase'].append(pos)
@@ -99,7 +99,7 @@ class CorpusStats:
 
         for mot in self.index:
             
-            nb = self.index[mot]['nb']
+            nb = self.index[mot]['nb_occ']
             liste_mots.append((mot, nb))
 
         liste_mots.sort(key=lambda x: x[1], reverse=True)
@@ -158,8 +158,8 @@ class CorpusStats:
             for mot2 in self.coocc_droite[mot1]:
             
                 nb_pair = self.coocc_droite[mot1][mot2]['nb']
-                nb_1 = self.index[mot1]['nb']
-                nb_2 = self.index[mot2]['nb']
+                nb_1 = self.index[mot1]['nb_occ']
+                nb_2 = self.index[mot2]['nb_occ']
 
                 pmi = math.log2(nb_pair * self.nb_mots / (nb_1 * nb_2))
 
@@ -168,8 +168,8 @@ class CorpusStats:
         for mot2 in self.coocc_gauche:
             for mot1 in self.coocc_gauche[mot2]:
                 nb_pair = self.coocc_gauche[mot2][mot1]['nb']
-                nb_1 = self.index[mot1]['nb']
-                nb_2 = self.index[mot2]['nb']
+                nb_1 = self.index[mot1]['nb_occ']
+                nb_2 = self.index[mot2]['nb_occ']
 
                 # PMI = log2( C(w1,w2) * N / (C(w1)*C(w2)) )
                 pmi = math.log2(nb_pair * self.nb_mots /(nb_1 * nb_2))
@@ -245,10 +245,10 @@ class CorpusStats:
             for tag in infos['tags']:
                 if tag not in self.index_tags:
                     self.index_tags[tag] = {
-                        'nb_occurrences': 0,
+                        'nb_occ': 0,
                         'formes': {}
                     }
-                self.index_tags[tag]['nb_occurrences'] += 1
+                self.index_tags[tag]['nb_occ'] += 1
 
                 if mot not in self.index_tags[tag]['formes']:
                     self.index_tags[tag]['formes'][mot] = 0
@@ -256,7 +256,7 @@ class CorpusStats:
                 self.index_tags[tag]['formes'][mot] += 1
 
         for tag, infos in self.index_tags.items():
-            nb_occurrences = infos['nb_occurrences']
+            nb_occurrences = infos['nb_occ']
 
             liste_formes = list(infos['formes'].items())
             liste_formes.sort(key=lambda x: x[1], reverse=True)
@@ -306,7 +306,7 @@ class CorpusStats:
             infos = self.index[cible]
 
             print(f"Mot: {cible}")
-            print(f"Nombre d'occurrences: {infos['nb']}")
+            print(f"Nombre d'occurrences: {infos['nb_occ']}")
             print(f"Rang: {infos['rang']}")
             print(f"Fréquence: {infos['freq']}%")
 
@@ -365,9 +365,9 @@ class CorpusStats:
         infos = self.index_tags[tag]
 
         print(f"\nTag: {tag}")
-        print(f"Nombre d'occurrences: {infos['nb_occurrences']}")
+        print(f"Nombre d'occurrences: {infos['nb_occ']}")
         print(f"Nombre de formes distinctes: {infos['nb_formes']}")
-        print(f"Fréquence dans le corpus : {round(infos['nb_occurrences'] / self.nb_mots * 100, 4)}%")
+        print(f"Fréquence dans le corpus : {round(infos['nb_occ'] / self.nb_mots * 100, 4)}%")
         
         print(f"Formes les 10 plus fréquentes pour ce tag (mot : nb, freq, rang) :")
         for forme in infos['formes_triees'][:10]:
