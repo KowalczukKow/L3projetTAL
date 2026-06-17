@@ -42,7 +42,7 @@ def requete_mixte(corpus) :
     nb_total_corpus = corpus.nb_mots - nb_occ * (nb_mots-1)
     freq = calc_freq(nb_total_corpus, nb_occ)
     coocc = cooccurences(corpus, indices, nb_mots, nb_occ, demande, nb_total_corpus, mode)
-    affiche_infos(sequence, nb_occ, freq, coocc)
+    affiche_infos(sequence, nb_occ, freq, coocc, mode)
 
 
 def phrase_et_position(corpus, indice) :
@@ -115,9 +115,9 @@ def calc_pmi(corpus, nb_occ, liste_motags, nb_total_corpus, coocc, mode) :
 
 
 def sort_pmi(coocc) :
-    liste = []
 
     for i in range(2) :
+        liste = []
         for motag in coocc[i]:
             nb, pmi = coocc[i][motag]['nb'], coocc[i][motag]['pmi']
             liste.append((motag, nb, pmi))
@@ -142,17 +142,42 @@ def verif_motag_pres(liste_motags, motag_a_verif) :
     return compteur
 
 
-def affiche_infos(sequence, nbOcc, frequence, coocc) :
+def affiche_infos(sequence, nbOcc, frequence, coocc, mode) :
     print(f"\nSuite recherchée : ", sequence)
     print(f"Nombre d'occurrences : ", nbOcc)
     print(f"Fréquence : {frequence} %")
-    print(coocc)
+    affiche_coocc(coocc, mode)
+
+
+def affiche_coocc(coocc, mode) :
+    motag_str = 'tag' if mode == 1 else 'mot'
+
+    if coocc[0]:
+            print(f"\nPrincipales collocations à gauche ({motag_str} précédent : nb, PMI) :")
+            for motag in list(coocc[0].keys())[:5]:
+                print(motag, ":", coocc[0][motag]['nb'], ", ", round(coocc[0][motag]['pmi'],5))
+    else:
+        print("\nPas de collocations à gauche disponibles.")
+
+    if coocc[1]:
+        print(f"\nPrincipales collocations à droite ({motag_str} suivant : nb, PMI) :")
+        for motag in list(coocc[1].keys())[:5]:
+            print(motag, " : ", coocc[1][motag]['nb'], ", ", round(coocc[1][motag]['pmi'],5))
+    
+    else:
+        print("\nPas de collocations à droite disponibles.")
+        
 
 def demande_mode() :
         print("Mode d'affichage du contexte et de relations :")
         print("1. Mots uniquement")
         print("2. Tags uniquement")
-        return int(input("Votre choix : ").strip()) - 1
+        choix = input("Votre choix : ").strip()
+        if not choix :
+            return 0
+        elif int(choix) not in [1, 2] :
+            return 0
+        return int(choix) - 1
 
 if __name__ == "__main__":
     import main
