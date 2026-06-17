@@ -16,25 +16,28 @@ def requete_mixte(corpus) :
         else :
             demande.append((motag.lower(), 0))
 
-    len_suite = len(demande)
+    nb_mots = len(demande)
 
     indices = []
-    ph_pos = [] # numéros des phrases et positions dans les phrases
+    #ph_pos = [] # numéros des phrases et positions dans les phrases
 
     motag1, type = demande[0]
 
-    for i in range(len(corpus.tokens) - len_suite + 1) :
+    for i in range(len(corpus.tokens) - nb_mots + 1) :
         valid = True
         if corpus.tokens[i][type] == motag1 :
-            for j in range(1, len_suite) : 
+            for j in range(1, nb_mots) : 
                 if corpus.tokens[i+j][demande[j][1]] != demande[j][0] :
                     valid = False
                     break
             if valid :
                 indices.append(i)
-                ph_pos.append(phrase_et_position(corpus, i))
+                #ph_pos.append(phrase_et_position(corpus, i))
 
-    affiche_infos(sequence, len(indices), cooccurences(corpus.tokens, indices, len_suite, 1))
+    nb_occ = len(indices)
+    
+    freq = calc_freq(corpus, nb_occ, nb_mots)
+    affiche_infos(sequence, nb_occ, freq, cooccurences(corpus.tokens, indices, nb_mots, 1))
 
 
 def phrase_et_position(corpus, indice) :
@@ -42,9 +45,17 @@ def phrase_et_position(corpus, indice) :
         if indice < id_deb :
             return i - 1, indice - corpus.id_debut_sentences[i-1]
         
+def calc_freq(corpus, nb_occ, nb_mots) :
+    nb_total_corpus = corpus.nb_mots - nb_occ * (nb_mots-1)
+
+    if nb_total_corpus > 0 :
+        return round(nb_occ/nb_total_corpus * 100, 4)
+    
+    return 0.0
+        
 
 # mode = 0 pour les mots, mode = 1 pour les tags      
-def cooccurences(tokens, indices, len_suite, mode=0) :
+def cooccurences(tokens, indices, nb_mots, mode=0) :
     coocc = []
     coocc.append({}) # à gauche
     coocc.append({}) # à droite
@@ -60,8 +71,8 @@ def cooccurences(tokens, indices, len_suite, mode=0) :
 
             coocc[0][mot]['nb'] += 1
         
-        if id + len_suite - 1 != max_id_tokens :
-            mot = tokens[id+len_suite][mode]
+        if id + nb_mots - 1 != max_id_tokens :
+            mot = tokens[id+nb_mots][mode]
 
             if mot not in coocc[1] :
                 coocc[1][mot] = {'nb': 0}
@@ -71,9 +82,10 @@ def cooccurences(tokens, indices, len_suite, mode=0) :
     return coocc
 
 
-def affiche_infos(sequence, nbOcc, coocc) :
+def affiche_infos(sequence, nbOcc, frequence, coocc) :
     print(f"\nSuite recherchée : ", sequence)
     print(f"Nombre d'occurrences : ", nbOcc)
+    print(f"Fréquence : {frequence} %")
     print(coocc)
 
 if __name__ == "__main__":
