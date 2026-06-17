@@ -4,11 +4,12 @@ from reconaissance import tag_expr
 
 def requete_mixte(corpus) :
     expr_mixte = exprMixte(corpus)
-    expr_mixte.initialiseExprMixte()
+    expr_mixte.initialise_expr_mixte()
 
 class exprMixte:
     def __init__(self, corpus):
         self.corpus = corpus
+        self.formes = {}
         self.sequence = ''
         self.demande = []
         self.coocc = []
@@ -19,9 +20,9 @@ class exprMixte:
         self.mode = 0
         self.freq = 0
 
-    def initialiseExprMixte(self):
+    def initialise_expr_mixte(self):
         regex = re.compile(tag_expr)
-        self.sequence = input("Entrez la suite : ")
+        self.sequence = input("\nEntrez la suite : ")
         pattern = self.sequence.strip().split()
 
         for motag in pattern :
@@ -31,31 +32,47 @@ class exprMixte:
             else :
                 self.demande.append((motag.lower(), 0))
 
-        nb_motags = len(self.demande)
+        self.nb_motags = len(self.demande)
 
         motag1, type = self.demande[0]
 
-        for i in range(len(self.corpus.tokens) - nb_motags + 1) :
+        for i in range(len(self.corpus.tokens) - self.nb_motags + 1) :
             valid = True
             if self.corpus.tokens[i][type] == motag1 :
-                for j in range(1, nb_motags) : 
+                for j in range(1, self.nb_motags) : 
                     if self.corpus.tokens[i+j][self.demande[j][1]] != self.demande[j][0] :
                         valid = False
                         break
                 if valid :
+                    self.sauvegarde_forme(i)
                     self.indices.append(i)
-                    #ph_pos.append(phrase_et_position(self.corpus, i))
 
         self.nb_occ = len(self.indices)
         
         self.mode = self.demande_mode()
 
-        self.nb_total_corpus = self.corpus.nb_mots - self.nb_occ * (nb_motags-1)
+        self.nb_total_corpus = self.corpus.nb_mots - self.nb_occ * (self.nb_motags-1)
 
         self.calc_freq()
         self.cooccurences()
         self.affiche_infos()
 
+
+    def sauvegarde_forme(self, indice):
+        form = ""
+        indice_max = indice + self.nb_motags
+        for i in range(indice, indice_max):
+            form += self.corpus.tokens[i][2]
+            if i < indice_max - 1 :
+                form += " "
+        print(form)
+        if form.casefold() not in self.formes:
+            self.formes[form.casefold()] = {
+                'forme' : form,
+                'nb' : 0
+            } 
+
+        self.formes[form.casefold()]['nb']+=1
 
     def calc_freq(self) :
         if self.nb_total_corpus > 0 :
@@ -179,13 +196,17 @@ class exprMixte:
         print(f"\nSuite recherchée : ", self.sequence)
         print(f"Nombre d'occurrences : ", self.nb_occ)
         print(f"Fréquence : {self.freq} %")
+        self.demande_formes()
         self.affiche_coocc()
         size_kwic = self.demande_kwic()
         if size_kwic > 0 :
             results_kwic = self.kwic(size_kwic)
             self.affiche_kwic(results_kwic)
 
-
+    def affiche_formes(self):
+        print(f"\nLa suite [{self.sequence}] est présente sous formes suivantes : ")
+        for form in self.formes.keys() :
+            print(f"Forme : {self.formes[form]['forme']}, nombre d'occurrences : {self.formes[form]['nb']}")
 
     def affiche_coocc(self) :
         motag_str = 'mot' 
@@ -221,6 +242,12 @@ class exprMixte:
             print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
 
 
+    def demande_formes(self) :
+        choix = input("\nVoulez-vous afficher les formes de votre suite ? (oui/non):").strip()
+        if choix == 'oui' :
+            self.affiche_formes()
+    
+    
     def demande_mode(self) :
             print("\nMode d'affichage du contexte et de relations :")
             print("1. Mots uniquement")
