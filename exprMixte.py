@@ -176,10 +176,10 @@ def kwic(corpus, demande, indices, nb_motags, mode, size=5) :
     return results
 
 
-def verif_motag_pres(liste_motags, motag_a_verif) :
+def verif_motag_pres(demande, motag_a_verif) :
     compteur = 0
-    for motag in liste_motags:
-        if motag == motag_a_verif :
+    for motag in demande:
+        if motag[0] == motag_a_verif :
             compteur+=1
     return compteur
 
