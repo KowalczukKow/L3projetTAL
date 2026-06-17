@@ -49,6 +49,10 @@ class exprMixte:
 
         self.nb_occ = len(self.indices)
         
+        if self.nb_occ == 0 :
+            print("La suite n'est pas présente dans le corpus")
+            return
+        
         self.nb_total_corpus = self.corpus.nb_mots - self.nb_occ * (self.nb_motags-1)
 
         self.calc_freq()
