@@ -49,23 +49,25 @@ class exprMixte:
 
         self.nb_occ = len(self.indices)
         
-        self.mode = self.demande_mode()
-
         self.nb_total_corpus = self.corpus.nb_mots - self.nb_occ * (self.nb_motags-1)
 
         self.calc_freq()
+        self.affiche_infos_deb()
+        self.mode = self.demande_mode()
         self.cooccurences()
-        self.affiche_infos()
+        self.affiche_infos_fin()
+        
 
 
     def sauvegarde_forme(self, indice):
         form = ""
         indice_max = indice + self.nb_motags
+
         for i in range(indice, indice_max):
             form += self.corpus.tokens[i][2]
             if i < indice_max - 1 :
                 form += " "
-        print(form)
+
         if form.casefold() not in self.formes:
             self.formes[form.casefold()] = {
                 'forme' : form,
@@ -192,16 +194,20 @@ class exprMixte:
     ### AFFICHAGE ################
     ##############################
 
-    def affiche_infos(self) :
+    def affiche_infos_deb(self) :
         print(f"\nSuite recherchée : ", self.sequence)
         print(f"Nombre d'occurrences : ", self.nb_occ)
         print(f"Fréquence : {self.freq} %")
         self.demande_formes()
-        self.affiche_coocc()
+        
+    
+    def affiche_infos_fin(self) :
+        self.demande_coocc()
         size_kwic = self.demande_kwic()
         if size_kwic > 0 :
             results_kwic = self.kwic(size_kwic)
             self.affiche_kwic(results_kwic)
+
 
     def affiche_formes(self):
         print(f"\nLa suite [{self.sequence}] est présente sous formes suivantes : ")
@@ -243,10 +249,14 @@ class exprMixte:
 
 
     def demande_formes(self) :
-        choix = input("\nVoulez-vous afficher les formes de votre suite ? (oui/non):").strip()
+        choix = input("\nVoulez-vous afficher les formes de votre suite ? (oui/non) : ").strip()
         if choix == 'oui' :
             self.affiche_formes()
     
+    def demande_coocc(self):
+        choix = input("\nVoulez-vous afficher les collocations principales de votre suite ? (oui/non) : ").strip()
+        if choix == 'oui' :
+            self.affiche_coocc()
     
     def demande_mode(self) :
             print("\nMode d'affichage du contexte et de relations :")
