@@ -50,7 +50,7 @@ class CorpusStats:
                             print(token)
 
                     # séparer le mot et son tag
-                    mot, tag = self.parser_token(token)
+                    mot, tag, token_new = self.parser_token(token)
                     # rendre le mot en minuscules s'il n'est pas un nom propre
                     if tag != 'NPP':
                         mot = mot.lower()
@@ -122,8 +122,8 @@ class CorpusStats:
                 token1 = sentence[i]
                 token2 = sentence[i+1]
 
-                mot1, tag1 = self.parser_token(token1)
-                mot2, tag2 = self.parser_token(token2)
+                mot1, tag1, token_new1 = self.parser_token(token1)
+                mot2, tag2, token_new2 = self.parser_token(token2)
 
                 # je lai mis en commentaire parce que peut-être cest utile de savoir si le
                 # mot est à la fin / début de la phrase
@@ -573,8 +573,8 @@ class CorpusStats:
             mot, tag = token.rsplit('/', 1)
             mot = mot.lower()
         else:
-            mot, tag = token, None  # si pas de tag, on retourne None
-        return mot, tag
+            mot, tag = token, None, token  # si pas de tag, on retourne None
+        return mot, tag, token
 
 
 if __name__ == "__main__":

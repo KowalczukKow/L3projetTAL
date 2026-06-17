@@ -20,8 +20,6 @@ def requete_mixte(corpus) :
     nb_motags = len(demande)
 
     indices = []
-    #ph_pos = [] # numéros des phrases et positions dans les phrases
-
     motag1, type = demande[0]
 
     for i in range(len(corpus.tokens) - nb_motags + 1) :
@@ -76,7 +74,7 @@ def calc_freq(nb_total_corpus, nb_occ) :
     return 0.0
     
 
-# mode = 0 pour les mots, mode = 1 pour les tags      
+# mode = 0 pour les mots, mode = 1 pour les tags, mode = 2 pour mot/tag    
 def cooccurences(infos) :
     coocc = []
     coocc.append({}) # à gauche
@@ -230,10 +228,11 @@ def demande_mode() :
         print("Mode d'affichage du contexte et de relations :")
         print("1. Mots uniquement")
         print("2. Tags uniquement")
+        print("3. Mot/tag")
         choix = input("Votre choix : ").strip()
         if not choix :
             return 0
-        elif int(choix) not in [1, 2] :
+        elif int(choix) not in [1, 2, 3] :
             return 0
         return int(choix) - 1
 
