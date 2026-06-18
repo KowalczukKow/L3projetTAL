@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 class CorpusStats:
     def __init__(self, corpus_path):
         self.corpus = corpus_path
+        self.nb_valides = 0
         self.index = {}
         self.index_tags = {} # pour les statistiques sur les tags
         self.coocc_gauche = {} #collocations à gauche
@@ -19,7 +20,6 @@ class CorpusStats:
 
 
     def read_corpus(self, automate=None, test=False):
-        nb_valides = 0
 
         with open(self.corpus, 'r', encoding='utf-8') as f:
             id_phrase = 1 # numéroter les phrases à partir de 1
@@ -44,7 +44,7 @@ class CorpusStats:
 
                     if automate :
                         if automate.fullmatch(token) :
-                            nb_valides += 1
+                            self.nb_valides += 1
                         elif test == True:
                             print(token)
 
@@ -83,8 +83,8 @@ class CorpusStats:
         if test == True and automate: 
             print("Nom du fichier : ", self.corpus)
             print("---TEST---")
-            print("Nombre de mots recconus :", nb_valides)
-            print("Pourcentage de mots reconnus : ", nb_valides/self.nb_mots * 100, "%")
+            print("Nombre de mots recconus :", self.nb_valides)
+            print("Pourcentage de mots reconnus : ", self.nb_valides/self.nb_mots * 100, "%")
             print("----------")
 
         print(f"Nombre de mots: {self.nb_mots}")

@@ -27,7 +27,7 @@ def main():
 
     try: 
         stats = CorpusStats(chemin_corpus)
-        stats.read_corpus(automate, True)
+        stats.read_corpus(automate)
 
     except Exception as e:
         print(f"Erreur : le fichier '{chemin_corpus}' est introuvable.")
@@ -50,7 +50,7 @@ def main():
             print("Au revoir !")
             break
         elif choix == '1':
-            stats.info_generale()
+            stats.info_generale(automate, True)
         elif choix == '2':
             stats.plot_zipf()
         elif choix == '3':
