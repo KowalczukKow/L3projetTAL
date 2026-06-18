@@ -455,7 +455,7 @@ class CorpusStats:
 
             for id_phrase, phrase in enumerate(self.sentences, start=1):
                 for pos, token in enumerate(phrase, start=1):
-                    mot, tag = self.parser_token(token)
+                    mot, tag, token_new = self.parser_token(token)
                     if type == 'tag':
                         cible = tag
                     else:
@@ -489,7 +489,7 @@ class CorpusStats:
 
         for id_phrase, phrase in enumerate(self.sentences, start=1):
             for pos, token in enumerate(phrase, start=1):
-                mot, tag = self.parser_token(token)
+                mot, tag, token_new = self.parser_token(token)
                 if type == 'tag':
                     cible = tag
                 else:
@@ -528,7 +528,7 @@ class CorpusStats:
             mot, tag = token.rsplit('/', 1)
             mot = mot.lower()
         else:
-            mot, tag = token, None, token  # si pas de tag, on retourne None
+            mot, tag = token, None  # si pas de tag, on retourne None
         return mot, tag, token
 
 
