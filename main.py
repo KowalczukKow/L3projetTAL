@@ -1,6 +1,7 @@
 import re
 from reconaissance import expr
 from corpusStats import CorpusStats
+from exprMixte import requete_mixte
 
 def main():
     automate = re.compile(expr)
@@ -39,7 +40,7 @@ def main():
         print("2. Graphe de Zipf")
         print("3. Afficher les statistiques d'un tag (fréquence, rang, 10 formes les plus fréquentes)")
         print("4. Rechercher un mot (fréquence, rang, 5 collocations les plus fréquentes, KWIC optionnel)")
-        print("5. Rechercher une suite de mots")
+        print("5. Rechercher une suite de mots, une suite de tags ou une suite mixte")
         print("6. Rechercher une expression régulière (KWIC optionnel)")
         print("0. Quitter")
 
@@ -57,7 +58,7 @@ def main():
         elif choix == '4':
             stats.requete_mot()
         elif choix == '5':
-            stats.requete_n_gramme()
+            requete_mixte(stats)
         elif choix == '6':
             stats.requete_regex()
         else:

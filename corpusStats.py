@@ -1,7 +1,6 @@
 import math
 import re
-from reconaissance import expr
-from ngrammes import Ngramme
+from reconaissance import tag_expr
 import matplotlib.pyplot as plt
 
 class CorpusStats:
@@ -16,6 +15,7 @@ class CorpusStats:
         self.nb_phrases = 0
         self.nb_formes = 0
         self.sentences = [] # pour le KWIC
+        self.id_debut_sentences = []
 
 
     def read_corpus(self, automate=None, test=False):
@@ -28,13 +28,18 @@ class CorpusStats:
                 if not line:
                     continue
 
+                if self.nb_phrases != 0 :
+                    self.id_debut_sentences.append(len(self.sentences[-1]) + self.id_debut_sentences[-1])
+                else :
+                    self.id_debut_sentences.append(0)
+
                 words = line.split()   # les mots sont sous la forme "mot/tag"
                 self.sentences.append(words)   # stocke la phrase originale pour le KWIC
                 self.nb_phrases += 1
 
                 # parcourir tous les mots de la phrase
                 for pos, token in enumerate(words, start=1):   # pos à partir de 1
-                    self.tokens.append(token)
+                    self.tokens.append(self.parser_token(token))
                     self.nb_mots += 1
 
                     if automate :
@@ -44,7 +49,7 @@ class CorpusStats:
                             print(token)
 
                     # séparer le mot et son tag
-                    mot, tag = self.parser_token(token)
+                    mot, tag, token_new = self.parser_token(token)
                     # rendre le mot en minuscules s'il n'est pas un nom propre
                     if tag != 'NPP':
                         mot = mot.lower()
@@ -52,13 +57,13 @@ class CorpusStats:
                     # si le mot n'est pas encore dans l'index, l'ajouter
                     if mot not in self.index:
                         self.index[mot] = {
-                            'nb': 0,            # le nombre d'occurrences
+                            'nb_occ': 0, # le nombre d'occurrences
                             'tags': [],         # les tags associés
                             'n_phrase': [],     # les numéros de phrase où il apparaît
                             'pos_phrase': []    # les positions dans la phrase où il apparaît
                         }
                     # renouveler les informations pour ce mot
-                    self.index[mot]['nb'] += 1
+                    self.index[mot]['nb_occ'] += 1
                     self.index[mot]['tags'].append(tag)
                     self.index[mot]['n_phrase'].append(id_phrase)
                     self.index[mot]['pos_phrase'].append(pos)
@@ -93,7 +98,7 @@ class CorpusStats:
 
         for mot in self.index:
             
-            nb = self.index[mot]['nb']
+            nb = self.index[mot]['nb_occ']
             liste_mots.append((mot, nb))
 
         liste_mots.sort(key=lambda x: x[1], reverse=True)
@@ -116,8 +121,8 @@ class CorpusStats:
                 token1 = sentence[i]
                 token2 = sentence[i+1]
 
-                mot1, tag1 = self.parser_token(token1)
-                mot2, tag2 = self.parser_token(token2)
+                mot1, tag1, token_new1 = self.parser_token(token1)
+                mot2, tag2, token_new2 = self.parser_token(token2)
 
                 # je lai mis en commentaire parce que peut-être cest utile de savoir si le
                 # mot est à la fin / début de la phrase
@@ -152,8 +157,8 @@ class CorpusStats:
             for mot2 in self.coocc_droite[mot1]:
             
                 nb_pair = self.coocc_droite[mot1][mot2]['nb']
-                nb_1 = self.index[mot1]['nb']
-                nb_2 = self.index[mot2]['nb']
+                nb_1 = self.index[mot1]['nb_occ']
+                nb_2 = self.index[mot2]['nb_occ']
 
                 pmi = math.log2(nb_pair * self.nb_mots / (nb_1 * nb_2))
 
@@ -162,8 +167,8 @@ class CorpusStats:
         for mot2 in self.coocc_gauche:
             for mot1 in self.coocc_gauche[mot2]:
                 nb_pair = self.coocc_gauche[mot2][mot1]['nb']
-                nb_1 = self.index[mot1]['nb']
-                nb_2 = self.index[mot2]['nb']
+                nb_1 = self.index[mot1]['nb_occ']
+                nb_2 = self.index[mot2]['nb_occ']
 
                 # PMI = log2( C(w1,w2) * N / (C(w1)*C(w2)) )
                 pmi = math.log2(nb_pair * self.nb_mots /(nb_1 * nb_2))
@@ -239,10 +244,10 @@ class CorpusStats:
             for tag in infos['tags']:
                 if tag not in self.index_tags:
                     self.index_tags[tag] = {
-                        'nb_occurrences': 0,
+                        'nb_occ': 0,
                         'formes': {}
                     }
-                self.index_tags[tag]['nb_occurrences'] += 1
+                self.index_tags[tag]['nb_occ'] += 1
 
                 if mot not in self.index_tags[tag]['formes']:
                     self.index_tags[tag]['formes'][mot] = 0
@@ -250,7 +255,7 @@ class CorpusStats:
                 self.index_tags[tag]['formes'][mot] += 1
 
         for tag, infos in self.index_tags.items():
-            nb_occurrences = infos['nb_occurrences']
+            nb_occurrences = infos['nb_occ']
 
             liste_formes = list(infos['formes'].items())
             liste_formes.sort(key=lambda x: x[1], reverse=True)
@@ -300,7 +305,7 @@ class CorpusStats:
             infos = self.index[cible]
 
             print(f"Mot: {cible}")
-            print(f"Nombre d'occurrences: {infos['nb']}")
+            print(f"Nombre d'occurrences: {infos['nb_occ']}")
             print(f"Rang: {infos['rang']}")
             print(f"Fréquence: {infos['freq']}%")
 
@@ -359,9 +364,9 @@ class CorpusStats:
         infos = self.index_tags[tag]
 
         print(f"\nTag: {tag}")
-        print(f"Nombre d'occurrences: {infos['nb_occurrences']}")
+        print(f"Nombre d'occurrences: {infos['nb_occ']}")
         print(f"Nombre de formes distinctes: {infos['nb_formes']}")
-        print(f"Fréquence dans le corpus : {round(infos['nb_occurrences'] / self.nb_mots * 100, 4)}%")
+        print(f"Fréquence dans le corpus : {round(infos['nb_occ'] / self.nb_mots * 100, 4)}%")
         
         print(f"Formes les 10 plus fréquentes pour ce tag (mot : nb, freq, rang) :")
         for forme in infos['formes_triees'][:10]:
@@ -414,6 +419,7 @@ class CorpusStats:
             print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
 
 
+    # REGEX
     def requete_regex(self):
         import re
         pattern = input("Entrez l'expression régulière : ").strip()
@@ -506,48 +512,6 @@ class CorpusStats:
 
         return results
     
-    # N-GRAMMES
-    def requete_n_gramme(self) :
-        sequence = input("Entrez la suite de mots : ")
-        
-        ngramme = Ngramme(self, sequence)
-        if ngramme.nbOcc == 0:
-            print(f"La suite '{sequence}' n'est pas trouvée dans le corpus.")
-            return
-
-        print(f"Suite recherchée: ", sequence)
-        print(f"Nombre d'occurrences: ", ngramme.nbOcc)
-        print(f"Fréquence: ", ngramme.freq, "%")
-        print("Principales collocations (mot suivant : nb, PMI) :")
-
-    
-        # On peut choisir d'afficher aussi les collocations à gauche.
-        if ngramme.coocc[0]:
-            print("Principales collocations à gauche (mot précédent : nb) :")
-            for mot in list(ngramme.coocc[0].keys())[:5]:
-                print(mot, ":", ngramme.coocc[0][mot]['nb'])
-        else:
-            print("\nPas de collocations à gauche disponibles.")
-
-        for mot in ngramme.coocc[1].keys():
-            print("Principales collocations à droite (mot suivant : nb, PMI) :")
-            for mot in list(ngramme.coocc[1].keys())[:5]:
-                print(mot, " : ", ngramme.coocc[1][mot]['nb'], ", ", round(ngramme.coocc[1][mot]['pmi'],5))
-        
-        else:
-            print("\nPas de collocations à droite disponibles.")
-
-        kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
-
-        if kwic_choix == 'oui':
-            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
-
-            kwic_results = ngramme.kwic_suites(size)
-
-            if kwic_results:
-                ngramme.afficher_kwic_suite(kwic_results)
-            else:
-                print("Aucun contexte trouvé.")
 
     """
     Pour rendre votre concordancier relativement indépendant du format du corpus, il faut découpler 
@@ -562,9 +526,10 @@ class CorpusStats:
         # Par défaut, elle suppose le format mot/tag
         if '/' in token:
             mot, tag = token.rsplit('/', 1)
+            mot = mot.lower()
         else:
-            mot, tag = token, None  # si pas de tag, on retourne None
-        return mot, tag
+            mot, tag = token, None, token  # si pas de tag, on retourne None
+        return mot, tag, token
 
 
 if __name__ == "__main__":

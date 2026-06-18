@@ -46,12 +46,14 @@ p = "P" #préposition
 
 i = "I" #interjection
 
-expr = (mot + "(?:" +  detwh + "|" +  det + "|" + nc + "|" + npp + "|" 
+tag_expr = ("(?:" +  detwh + "|" +  det + "|" + nc + "|" + npp + "|" 
     + vimp + "|" + vinf + "|" + vpr + "|" + vpp + "|" + v + "|" + vs + "|"
     + advwh + "|"  + adjwh + "|" + adj + "|" + adv + "|" + et + "|"
     + cc + "|" + cs + "|" + cls + "|" + clo + "|" + clr + "|"
     + ponct + "|" + prorel + "|" + prowh + "|" + pro + "|" + pref + "|" + pd + "|"
-    + ppro + "|" + p + "|" + i + ")" )
+    + ppro + "|" + p + "|" + i + ")")
+
+expr = (mot + tag_expr )
 
 
 if __name__ == "__main__" :
