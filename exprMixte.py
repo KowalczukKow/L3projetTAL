@@ -115,7 +115,8 @@ class exprMixte:
 
                 self.coocc[1][motag]['nb'] += 1
         
-        self.calc_pmi()
+        if self.mode != 2 :
+            self.calc_pmi()
 
 
     def calc_pmi(self) :
@@ -220,22 +221,28 @@ class exprMixte:
 
     def affiche_coocc(self) :
         motag_str = 'mot' 
+        show_pmi = True
         if self.mode == 1 :
             motag_str = 'tag'
         elif self.mode == 2 :
             motag_str = 'mot/tag'
+            show_pmi = False
 
         if self.coocc[0]:
-                print(f"\nPrincipales collocations à gauche ({motag_str} précédent : nb, PMI) :")
+                print(f"\nPrincipales collocations à gauche ({motag_str} précédent : nb"
+                      f"{', PMI' if show_pmi else ''}) :")
                 for motag in list(self.coocc[0].keys())[:5]:
-                    print(motag, ":", self.coocc[0][motag]['nb'], ", ", round(self.coocc[0][motag]['pmi'],5))
+                    print(f"{motag} : {self.coocc[0][motag]['nb']}"
+                          f"{f', {round(self.coocc[0][motag]['pmi'],5)}' if show_pmi else ''}")
         else:
             print("\nPas de collocations à gauche disponibles.")
 
         if self.coocc[1]:
-            print(f"\nPrincipales collocations à droite ({motag_str} suivant : nb, PMI) :")
+            print(f"\nPrincipales collocations à droite ({motag_str} suivant : nb"
+                  f"{', PMI' if show_pmi else ''}) :")
             for motag in list(self.coocc[1].keys())[:5]:
-                print(motag, " : ", self.coocc[1][motag]['nb'], ", ", round(self.coocc[1][motag]['pmi'],5))
+                print(f"{motag} : {self.coocc[1][motag]['nb']}"
+                      f"{f', {round(self.coocc[1][motag]['pmi'],5)}' if show_pmi else ''}")
         
         else:
             print("\nPas de collocations à droite disponibles.")
