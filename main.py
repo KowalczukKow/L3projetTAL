@@ -50,7 +50,7 @@ def main():
             print("Au revoir !")
             break
         elif choix == '1':
-            stats.info_generale(automate, True)
+            stats.info_generale(automate)
         elif choix == '2':
             stats.plot_zipf()
         elif choix == '3':

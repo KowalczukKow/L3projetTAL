@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 class CorpusStats:
     def __init__(self, corpus_path):
         self.corpus = corpus_path
+        self.test = False
         self.nb_valides = 0
         self.index = {}
         self.index_tags = {} # pour les statistiques sur les tags
@@ -20,6 +21,8 @@ class CorpusStats:
 
 
     def read_corpus(self, automate=None, test=False):
+
+        self.test = test
 
         with open(self.corpus, 'r', encoding='utf-8') as f:
             id_phrase = 1 # numéroter les phrases à partir de 1
@@ -79,8 +82,8 @@ class CorpusStats:
         self.trier_pmi()
         self.stats_tags()
 
-    def info_generale(self, automate=None, test=False):
-        if test == True and automate: 
+    def info_generale(self, automate=None):
+        if self.test == True and automate: 
             print("Nom du fichier : ", self.corpus)
             print("---TEST---")
             print("Nombre de mots recconus :", self.nb_valides)
