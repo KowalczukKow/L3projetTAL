@@ -8,6 +8,7 @@ class CorpusStats:
         self.corpus = corpus_path
         self.test = False
         self.nb_valides = 0
+        self.liste_invalides = []
         self.index = {}
         self.index_tags = {} # pour les statistiques sur les tags
         self.coocc_gauche = {} #collocations à gauche
@@ -49,7 +50,7 @@ class CorpusStats:
                         if automate.fullmatch(token) :
                             self.nb_valides += 1
                         elif test == True:
-                            print(token)
+                            self.liste_invalides.append(token)
 
                     # séparer le mot et son tag
                     mot, tag, token_new = self.parser_token(token)
@@ -86,8 +87,13 @@ class CorpusStats:
         if self.test == True and automate: 
             print("Nom du fichier : ", self.corpus)
             print("---TEST---")
-            print("Nombre de mots recconus :", self.nb_valides)
+            print("Nombre de mots recconus : ", self.nb_valides)
+            if self.nb_valides != self.nb_mots :
+                print("Nombre de mots non reconnus : ", self.nb_mots - self.nb_valides)
             print("Pourcentage de mots reconnus : ", self.nb_valides/self.nb_mots * 100, "%")
+            print("\nMots non reconnus : ")
+            for mot_inv in self.liste_invalides :
+                print(mot_inv)
             print("----------")
 
         print(f"Nombre de mots: {self.nb_mots}")
