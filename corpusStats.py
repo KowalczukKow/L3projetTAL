@@ -89,9 +89,9 @@ class CorpusStats:
             print("---TEST---")
             print("Nombre de mots recconus : ", self.nb_valides)
             if self.nb_valides != self.nb_mots :
-                print("Nombre de mots non reconnus : ", self.nb_mots - self.nb_valides)
-            print("Pourcentage de mots reconnus : ", self.nb_valides/self.nb_mots * 100, "%")
-            print("\nMots non reconnus : ")
+                print("Nombre de mots non recconnus : ", self.nb_mots - self.nb_valides)
+            print("Pourcentage de mots recconnus : ", self.nb_valides/self.nb_mots * 100, "%")
+            print("\nMots non recconnus : ")
             for mot_inv in self.liste_invalides :
                 print(mot_inv)
             print("----------")
