@@ -11,7 +11,12 @@ def afficher_aide():
 
 4.1 Démarrage du programme
 ------------------------------------------------
-Ce programme a été développé en Python 3. Pour le lancer, il vous suffit d’exécuter le fichier principal à l’aide de la commande suivante:
+Ce programme a été développé en Python 3. La seule bibliothèque externe à installer est `matplotlib`, utilisée pour afficher le graphe de Zipf.
+
+    ```bash
+    pip install matplotlib
+          
+Pour le lancer, il vous suffit d’exécuter le fichier principal à l’aide de la commande suivante:
 
     python main.py
 
