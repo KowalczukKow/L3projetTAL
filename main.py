@@ -34,16 +34,32 @@ def main():
         return
 
     while True:
-        print("\n" + "="*40)
+        print("\n" + "=" * 55)
         print("MENU PRINCIPAL - CONCORDANCIER")
-        print("1. Informations générales du corpus")
-        print("2. Graphe de Zipf")
-        print("3. Afficher les statistiques d'un tag (fréquence, rang, 10 formes les plus fréquentes)")
-        print("4. Rechercher un mot (fréquence, rang, 5 collocations les plus fréquentes, KWIC optionnel)")
-        print("5. Rechercher une suite de mots, une suite de tags ou une suite mixte")
-        print("6. Rechercher une expression régulière (KWIC optionnel)")
-        print("0. Quitter")
+        print("-" * 55)
 
+        print("\n1. Informations générales du corpus")
+        print("   -> nombre de mots, phrases et formes")
+
+        print("\n2. Graphe de Zipf")
+        print("   -> visualisation des fréquences des mots")
+
+        print("\n3. Afficher les statistiques d'un tag")
+        print("   -> fréquence, rang et formes les plus fréquentes")
+
+        print("\n4. Rechercher un mot")
+        print("   -> fréquence, rang, collocations et KWIC optionnel")
+
+        print("\n5. Rechercher par expression régulière (mot/tag)")
+        print("   -> ex : '.*tion', 'N.*'")
+
+        print("\n6. Rechercher une suite structurée (suite de mots/de tags/mixte)")
+        print("   -> suite de mots, de tags ou mixte")
+        print("   -> ex : 'DET NC', 'NPP V', 'le NC'")
+
+        print("\n0. Quitter")
+
+        print("\n" + "=" * 55)
         choix = input("Votre choix : ").strip()
         
         if choix == '0':
@@ -58,9 +74,9 @@ def main():
         elif choix == '4':
             stats.requete_mot()
         elif choix == '5':
-            requete_mixte(stats)
-        elif choix == '6':
             stats.requete_regex()
+        elif choix == '6':
+            requete_mixte(stats)
         else:
             print("Choix invalide, veuillez réessayer.")
     
