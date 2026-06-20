@@ -1,10 +1,6 @@
 import math
 import re
-from reconaissance import tag_expr
-
-def requete_mixte(corpus) :
-    expr_mixte = exprMixte(corpus)
-    expr_mixte.initialise_expr_mixte()
+from reconnaissance import tag_expr
 
 class exprMixte:
     def __init__(self, corpus):
@@ -19,6 +15,7 @@ class exprMixte:
         self.nb_total_corpus = 0
         self.mode = 0
         self.freq = 0
+        
 
     def initialise_expr_mixte(self):
         regex = re.compile(tag_expr)
@@ -288,8 +285,6 @@ class exprMixte:
             size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
             return size
         return -1
-
-
 
 
 
