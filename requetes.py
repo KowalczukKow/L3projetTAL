@@ -53,10 +53,10 @@ def requete_mot(corpus):
         if kwic_choix == 'oui':
             size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
 
-            kwic_results = corpus.kwic_words(cible, size = size, case_sensitive=False)
+            kwic_results = kwic_words(corpus, cible, size = size, case_sensitive=False)
 
             if kwic_results:
-                corpus.afficher_kwic(kwic_results, size = size)
+                afficher_kwic(kwic_results, size = size)
             else:
                 print("Aucun contexte trouvé.")
 

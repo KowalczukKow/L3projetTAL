@@ -8,8 +8,8 @@ def cooccurrences(corpus):
                 token1 = sentence[i]
                 token2 = sentence[i+1]
 
-                mot1, tag1, token_new1 = corpus.parser_token(token1)
-                mot2, tag2, token_new2 = corpus.parser_token(token2)
+                mot1, tag1, token_new1 = parser_token(token1)
+                mot2, tag2, token_new2 = parser_token(token2)
 
                 # je lai mis en commentaire parce que peut-être cest utile de savoir si le
                 # mot est à la fin / début de la phrase

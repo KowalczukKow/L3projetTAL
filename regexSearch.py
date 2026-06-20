@@ -1,5 +1,6 @@
 import re
 from kwic import afficher_kwic
+from parser import parser_token
 
 def requete_regex(corpus):
         
@@ -21,9 +22,9 @@ def requete_regex(corpus):
         case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
         case_sensitive = (case_choix == 'oui')
 
-        results = corpus.kwic_regex(pattern, type = type, size = size, case_sensitive = case_sensitive)
+        results = kwic_regex(corpus, pattern, type = type, size = size, case_sensitive = case_sensitive)
         if results:
-            corpus.afficher_kwic(results, size = size)
+            afficher_kwic(results, size = size)
         else:
             print("Aucune occurrence trouvée.")
 
@@ -36,7 +37,7 @@ def requete_regex(corpus):
 
         for id_phrase, phrase in enumerate(corpus.sentences, start=1):
             for pos, token in enumerate(phrase, start=1):
-                mot, tag, token_new = corpus.parser_token(token)
+                mot, tag, token_new = parser_token(token)
                 if type == 'tag':
                     cible = tag
                 else:
@@ -70,7 +71,7 @@ def kwic_regex(corpus, pattern, type = 'mot', size = 5, case_sensitive = False):
 
     for id_phrase, phrase in enumerate(corpus.sentences, start=1):
         for pos, token in enumerate(phrase, start=1):
-            mot, tag, token_new = corpus.parser_token(token)
+            mot, tag, token_new = parser_token(token)
             if type == 'tag':
                 cible = tag
             else:

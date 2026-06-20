@@ -24,7 +24,7 @@ def main():
     print("=== Chargement du corpus ===")
 
     chemin_corpus = os.path.join(
-        os.path.dirname(__file__),
+        os.path.dirname(os.path.abspath(__file__)),
         "corpus",
         "sequoia-9.2.fine.brown"
     )
@@ -56,8 +56,13 @@ def main():
         trier_pmi(stats)
         stats_tags(stats)
 
-    except Exception as e:
+    except FileNotFoundError:
         print(f"Erreur : le fichier '{chemin_corpus}' est introuvable.")
+        return
+
+    except Exception as e:
+        print("Une autre erreur est survenue :")
+        print(e)
         return
 
     while True:

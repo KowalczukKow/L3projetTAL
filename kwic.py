@@ -32,7 +32,7 @@ def kwic_words(corpus, word, size = 5, case_sensitive = False):
         })
     return results
 
-def afficher_kwic(corpus, kwic_results, size = 5, show_tag=True):
+def afficher_kwic(kwic_results, size = 5, show_tag=True):
     for res in kwic_results:
         gauche_str = ' '.join(res['gauche'])
         enquete_str = res['mot_enquete']

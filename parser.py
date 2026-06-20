@@ -6,7 +6,7 @@ de format (mot_tag, mot:tag, ou même du texte sans tag), vous ne voulez pas ré
 fonctions.
 """
 
-def parser_token(corpus, token):
+def parser_token(token):
     # Cette fonction prend un token brut et retourne le mot et son tag
     # Par défaut, elle suppose le format mot/tag
     if '/' in token:

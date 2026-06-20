@@ -1,3 +1,5 @@
+from parser import parser_token
+
 class CorpusStats:
     def __init__(self, corpus_path):
         self.corpus = corpus_path
@@ -38,7 +40,7 @@ class CorpusStats:
 
                 # parcourir tous les mots de la phrase
                 for pos, token in enumerate(words, start=1):   # pos à partir de 1
-                    self.tokens.append(self.parser_token(token))
+                    self.tokens.append(parser_token(token))
                     self.nb_mots += 1
 
                     if automate :
@@ -48,7 +50,7 @@ class CorpusStats:
                             self.liste_invalides.append(token)
 
                     # séparer le mot et son tag
-                    mot, tag, token_new = self.parser_token(token)
+                    mot, tag, token_new = parser_token(token)
                     # rendre le mot en minuscules s'il n'est pas un nom propre
                     if tag != 'NPP':
                         mot = mot.lower()
@@ -70,13 +72,6 @@ class CorpusStats:
                 id_phrase += 1
 
         self.nb_formes = len(self.index)
-
-        # Partie statistiques
-        self.ranks_and_freqs()
-        self.cooccurrences()
-        self.pmi()
-        self.trier_pmi()
-        self.stats_tags()
 
 if __name__ == "__main__":
     import main

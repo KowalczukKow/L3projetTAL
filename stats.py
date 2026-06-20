@@ -13,7 +13,7 @@ def info_generale(corpus, automate=None):
         print("\nMots non recconnus : ")
 
         for mot_inv in corpus.liste_invalides :
-                print(mot_inv)
+            print(mot_inv)
         print("----------")
 
     print(f"Nombre de mots: {corpus.nb_mots}")
