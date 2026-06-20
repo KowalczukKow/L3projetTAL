@@ -2,6 +2,8 @@ from kwic import kwic_words, afficher_kwic
 
 from exprMixte import exprMixte
 
+from regexSearch import requete_regex as regex
+
 def requete_mot(corpus):
     while True:
         mot = input("Entrez un mot (ou appuyer sur ENTREE pour quitter) : ")
@@ -89,6 +91,10 @@ def requete_tag(corpus):
 def requete_mixte(corpus) :
     expr_mixte = exprMixte(corpus)
     expr_mixte.initialise_expr_mixte()
+
+
+def requete_regex(corpus):
+    regex(corpus)
 
 
 if __name__ == "__main__":

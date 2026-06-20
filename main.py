@@ -9,9 +9,7 @@ from stats import info_generale, ranks_and_freqs, stats_tags, plot_zipf
 
 from collocations import cooccurrences, pmi, trier_pmi
 
-from requetes import requete_mot, requete_tag, requete_mixte
-
-from regexSearch import requete_regex
+from requetes import requete_mot, requete_tag, requete_mixte, requete_regex
 
 from aide import afficher_aide
 
