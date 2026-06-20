@@ -1,4 +1,5 @@
 import re
+import os
 
 from reconnaissance import expr
 
@@ -22,7 +23,11 @@ def main():
 
     print("=== Chargement du corpus ===")
 
-    chemin_corpus = "corpus/sequoia-9.2.fine.brown"
+    chemin_corpus = os.path.join(
+        os.path.dirname(__file__),
+        "corpus",
+        "sequoia-9.2.fine.brown"
+    )
 
     print(f"Le chemin du corpus actuel : {chemin_corpus}")
     choix_corpus = input("Voulez-vous changer le corpus (oui/non) : ").strip()
@@ -39,9 +44,17 @@ def main():
         
     print("Chargement du corpus...")
 
-    try: 
+    try:
+
         stats = CorpusStats(chemin_corpus)
         stats.read_corpus(automate)
+
+        # Partie statistiques
+        ranks_and_freqs(stats)
+        cooccurrences(stats)
+        pmi(stats)
+        trier_pmi(stats)
+        stats_tags(stats)
 
     except Exception as e:
         print(f"Erreur : le fichier '{chemin_corpus}' est introuvable.")
@@ -81,20 +94,28 @@ def main():
         if choix == '0':
             print("Au revoir !")
             break
+
         elif choix == '1':
-            stats.info_generale(automate)
+            info_generale(stats, automate)
+
         elif choix == '2':
-            stats.plot_zipf()
+            plot_zipf(stats)
+
         elif choix == '3':
-            stats.requete_tag()
+            requete_tag(stats)
+
         elif choix == '4':
-            stats.requete_mot()
+            requete_mot(stats)
+
         elif choix == '5':
-            stats.requete_regex()
+            requete_regex(stats)
+
         elif choix == '6':
             requete_mixte(stats)
+
         elif choix == '7':
             afficher_aide()
+
         else:
             print("Choix invalide, veuillez réessayer.")
     
