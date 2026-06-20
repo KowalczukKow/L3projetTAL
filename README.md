@@ -1,6 +1,6 @@
-# IV. Manuel utilisateur
+# MANUEL UTILISATEUR
 
-## 4.1 Démarrage du programme
+## Démarrage du programme
 
 Ce programme a été développé en Python 3. La seule bibliothèque externe à installer est `matplotlib`, utilisée pour afficher le graphe de Zipf.
 
@@ -37,7 +37,7 @@ A partir de cet index, le programme calcule ensuite plusieurs statistiques:
 - les contextes KWIC
 - les statistiques par étiquette grammaticale
 
-## 4.2 Format attendu
+## Format attendu
 
 Le corpus doit être au format mot/étiquette. Par exemple :
 
@@ -49,7 +49,7 @@ Les tokens doivent être séparés par des espaces. Chaque ligne du corpus repr�
 
 Le programme réalise la séparation de chaque forme de son étiquette grammaticale à l’aide d’une fonction de parsing des tokens. Il est ainsi relativement adaptable à d’autres formats du corpus, à condition de modifier cette fonction de parsing si nécessaire.
 
-## 4.3 Menu principal
+## Menu principal
 
 Après le chargement du corpus, le menu principal apparaît:
 
