@@ -20,6 +20,36 @@ def info_generale(corpus, automate=None):
     print(f"Nombre de lignes: {corpus.nb_lignes}")
     print(f"Nombre de formes: {corpus.nb_formes}")
 
+    # Top 10 mots
+
+    print("\nTop 10 des mots les plus fréquents :")
+
+    liste_mots = []
+
+    for mot, infos in corpus.index.items():
+        liste_mots.append((mot, infos['nb_occ'], infos['freq'], infos['rang']))
+
+    liste_mots.sort(key=lambda x: x[1], reverse=True)
+
+    for mot, nb_occ, freq, rang in liste_mots[:10]:
+        print(f"{mot} : {nb_occ} occurrence(s), {freq}%, rang {rang}")
+
+    # Top 10 tags
+
+    print("\nTop 10 des tags les plus fréquents :")
+
+    liste_tags = []
+
+    for tag, infos in corpus.index_tags.items():
+        freq = round(infos['nb_occ'] / corpus.nb_mots * 100, 4)
+        liste_tags.append((tag, infos['nb_occ'], freq))
+
+    liste_tags.sort(key=lambda x: x[1], reverse=True)
+
+    for tag, nb_occ, freq in liste_tags[:10]:
+        print(f"{tag} : {nb_occ} occurrence(s), {freq}%")
+
+
 def ranks_and_freqs(corpus):
 
     liste_mots = []
