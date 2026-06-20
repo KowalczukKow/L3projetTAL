@@ -1,6 +1,6 @@
 import math
 import re
-from reconaissance import tag_expr
+from reconnaissance import tag_expr
 
 def requete_mixte(corpus) :
     expr_mixte = exprMixte(corpus)
