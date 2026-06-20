@@ -2,10 +2,6 @@ import math
 import re
 from reconnaissance import tag_expr
 
-def requete_mixte(corpus) :
-    expr_mixte = exprMixte(corpus)
-    expr_mixte.initialise_expr_mixte()
-
 class exprMixte:
     def __init__(self, corpus):
         self.corpus = corpus
@@ -19,6 +15,7 @@ class exprMixte:
         self.nb_total_corpus = 0
         self.mode = 0
         self.freq = 0
+        
 
     def initialise_expr_mixte(self):
         regex = re.compile(tag_expr)

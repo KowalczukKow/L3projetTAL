@@ -1,5 +1,7 @@
 from kwic import kwic_words, afficher_kwic
 
+from exprMixte import exprMixte
+
 def requete_mot(corpus):
     while True:
         mot = input("Entrez un mot (ou appuyer sur ENTREE pour quitter) : ")
@@ -83,6 +85,10 @@ def requete_tag(corpus):
     for forme in infos['formes_triees'][:10]:
         print(f"{forme['mot']} : {forme['nb']}, {forme['freq']}%, rang {forme['rang']}")
 
+
+def requete_mixte(corpus) :
+    expr_mixte = exprMixte(corpus)
+    expr_mixte.initialise_expr_mixte()
 
 
 if __name__ == "__main__":
