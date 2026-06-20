@@ -57,8 +57,19 @@ def main():
         stats_tags(stats)
 
     except FileNotFoundError:
+
         print(f"Erreur : le fichier '{chemin_corpus}' est introuvable.")
-        return
+        nouvel_essai = input("Voulez-vous essayer un autre chemin ? (oui/non) : ").strip().lower()
+
+        if nouvel_essai == 'oui':
+            chemin_corpus = input("Entrez le nouveau chemin du corpus : ").strip()
+
+            while not chemin_corpus:
+                print("Aucun chemin de corpus fourni.")
+                chemin_corpus = input("Entrez le nouveau chemin du corpus : ").strip()
+        else:
+            print("Chargement annulé.")
+            return None
 
     except Exception as e:
         print("Une autre erreur est survenue :")
