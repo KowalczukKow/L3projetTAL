@@ -12,7 +12,7 @@ def cooccurrences(corpus):
                 mot2, tag2, token_new2 = parser_token(token2)
 
                 # je lai mis en commentaire parce que peut-être cest utile de savoir si le
-                # mot est à la fin / début de la phrase
+                # mot est à la fin / début de la ligne
                 # if tag1 == 'PONCT' or tag2 == 'PONCT':
                 #     continue
 

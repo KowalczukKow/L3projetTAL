@@ -35,8 +35,8 @@ def requete_regex(corpus):
         regex = re.compile(pattern)
         results = []
 
-        for id_phrase, phrase in enumerate(corpus.sentences, start=1):
-            for pos, token in enumerate(phrase, start=1):
+        for id_ligne, ligne in enumerate(corpus.sentences, start=1):
+            for pos, token in enumerate(ligne, start=1):
                 mot, tag, token_new = parser_token(token)
                 if type == 'tag':
                     cible = tag
@@ -50,13 +50,13 @@ def requete_regex(corpus):
                     results.append({
                         'mot': mot,
                         'tag': tag,
-                        'phrase_id': id_phrase,
+                        'ligne_id': id_ligne,
                         'pos': pos
                     })
         if results:
             print(f"\n{len(results)} occurrence(s) trouvée(s) :")
             for res in results[:20]:
-                print(f"Phrase {res['phrase_id']}, position {res['pos']} : {res['mot']}/{res['tag']}")
+                print(f"Ligne {res['ligne_id']}, position {res['pos']} : {res['mot']}/{res['tag']}")
             if len(results) > 20:
                 print(f"... et {len(results)-20} autres.")
         else:
@@ -69,8 +69,8 @@ def kwic_regex(corpus, pattern, type = 'mot', size = 5, case_sensitive = False):
     regex = re.compile(pattern)
     results = []
 
-    for id_phrase, phrase in enumerate(corpus.sentences, start=1):
-        for pos, token in enumerate(phrase, start=1):
+    for id_ligne, ligne in enumerate(corpus.sentences, start=1):
+        for pos, token in enumerate(ligne, start=1):
             mot, tag, token_new = parser_token(token)
             if type == 'tag':
                 cible = tag
@@ -83,13 +83,13 @@ def kwic_regex(corpus, pattern, type = 'mot', size = 5, case_sensitive = False):
             if regex.search(cible):
                   
                 gauche_ind = max(0, pos - 1 - size) 
-                droite_ind = min(len(phrase), pos + size) 
+                droite_ind = min(len(ligne), pos + size) 
                 results.append({
-                    'id_phrase': id_phrase,
+                    'id_ligne': id_ligne,
                     'pos': pos,
-                    'gauche': phrase[gauche_ind:pos-1],
+                    'gauche': ligne[gauche_ind:pos-1],
                     'mot_enquete': token,
-                    'droite': phrase[pos:droite_ind]
+                    'droite': ligne[pos:droite_ind]
                 })
 
     return results

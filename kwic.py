@@ -18,13 +18,13 @@ def kwic_words(corpus, word, size = 5, case_sensitive = False):
     infos = corpus.index[query]
     results = []
 
-    for id_phrase, pos in zip(infos['n_phrase'], infos['pos_phrase']):
-        sentence = corpus.sentences[id_phrase - 1]  # id_phrase commence à 1
+    for id_ligne, pos in zip(infos['n_ligne'], infos['pos_ligne']):
+        sentence = corpus.sentences[id_ligne - 1]  # id_ligne commence à 1
         gauche_ind = max(0, pos - size - 1)  # pos commence à 1
-        pos_enquete = pos - 1  # position du mot dans la phrase (0-indexé)
+        pos_enquete = pos - 1  # position du mot dans la ligne (0-indexé)
         droite_ind = min(len(sentence), pos + size)  # pos + size est exclusif
         results.append({
-            'id_phrase' : id_phrase,
+            'id_ligne' : id_ligne,
             'pos' : pos,
             'gauche' : sentence[gauche_ind:pos_enquete],
             'mot_enquete' : sentence[pos_enquete],

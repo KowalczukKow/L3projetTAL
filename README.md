@@ -22,12 +22,12 @@ corpus/sequoia-9.2.fine.brown
 
 L’utilisateur peut choisir de conserver ce corpus ou d’en indiquer un autre. Si l’utilisateur souhaite changer de corpus, le programme lui demande de saisir le nouveau chemin d’accès. Si aucun chemin n’est fourni, une nouvelle saisie est demandée. En cas de chemin invalide ou de fichier inexistant, un message d’erreur est affiché..
 
-Une fois le corpus chargé correctement, le programme parcourt l’ensemble des phrases et construit un index lexical. Pour chaque mot, cet index stocke les informations suivantes:
+Une fois le corpus chargé correctement, le programme parcourt l’ensemble des lignes et construit un index lexical. Pour chaque mot, cet index stocke les informations suivantes:
 
 - le nombre d'occurrences;
 - les étiquettes morphosyntaxiques associées;
-- les numéros de phrases dans lesquelles le mot apparaît;
-- la position du mot dans chaque phrase
+- les numéros de lignes dans lesquelles le mot apparaît;
+- la position du mot dans chaque ligne
 
 A partir de cet index, le programme calcule ensuite plusieurs statistiques:
 
@@ -88,7 +88,7 @@ L’utilisateur sélectionne une option en saisissant le numéro correspondant. 
 Cette fonctionnalité fournit des informations quantitative générales sur le corpus:
 
 - le nombre total de mots;
-- le nombre total de phrases;
+- le nombre total de lignes;
 - le nombre de formes distinctes
 
 ### Option 2 : Graphe de Zipf
@@ -153,7 +153,7 @@ L’utilisateur doit ensuite choisir la cible de la recherche :
 
 L’utilisateur peut également indiquer s’il souhaite respecter la case (non par défaut).
 
-Si l’affichage KWIC est choisi, l’utilisateur peut définir la taille du contexte. Le résultat montre alors chaque occurrence avec son entourage. Si l’affichage KWIC n’est pas choisi, le programme liste les vingt premières occurrences avec le numéro de phrase, la position, et la forme mot/tag.
+Si l’affichage KWIC est choisi, l’utilisateur peut définir la taille du contexte. Le résultat montre alors chaque occurrence avec son entourage. Si l’affichage KWIC n’est pas choisi, le programme liste les vingt premières occurrences avec le numéro de ligne, la position, et la forme mot/tag.
 
 ### Option 6 : Recherche d’une suite structurée
 

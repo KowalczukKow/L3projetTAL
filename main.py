@@ -82,7 +82,7 @@ def main():
         print("-" * 55)
 
         print("\n1. Informations générales du corpus")
-        print("   -> nombre de mots, phrases et formes")
+        print("   -> nombre de mots, lignes et formes")
 
         print("\n2. Graphe de Zipf")
         print("   -> visualisation des fréquences des mots")

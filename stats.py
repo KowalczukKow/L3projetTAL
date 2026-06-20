@@ -17,7 +17,7 @@ def info_generale(corpus, automate=None):
         print("----------")
 
     print(f"Nombre de mots: {corpus.nb_mots}")
-    print(f"Nombre de phrases: {corpus.nb_phrases}")
+    print(f"Nombre de lignes: {corpus.nb_lignes}")
     print(f"Nombre de formes: {corpus.nb_formes}")
 
 def ranks_and_freqs(corpus):
