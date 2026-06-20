@@ -15,3 +15,9 @@ def parser_token(token):
     else:
         mot, tag = token, None  # si pas de tag, on retourne None
     return mot, tag, token
+
+
+
+if __name__ == "__main__":
+    import main
+    main.main()

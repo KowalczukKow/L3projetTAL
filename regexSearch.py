@@ -93,3 +93,9 @@ def kwic_regex(corpus, pattern, type = 'mot', size = 5, case_sensitive = False):
                 })
 
     return results
+
+
+
+if __name__ == "__main__":
+    import main
+    main.main()

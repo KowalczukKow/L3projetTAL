@@ -105,3 +105,8 @@ def trier_pmi(corpus):
         for mot1, nb, pmi in liste_gauche:
             corpus.index[mot2]['coocc_gauche'][mot1] = {'nb': nb, 'pmi': pmi}
 
+
+
+if __name__ == "__main__":
+    import main
+    main.main()

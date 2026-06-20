@@ -41,3 +41,9 @@ def afficher_kwic(kwic_results, size = 5, show_tag=True):
         gauche_part = gauche_str.rjust(30) # 30 caractères pour la partie gauche
         droite_part = droite_str.ljust(30) # 30 caractères pour la partie droite
         print(gauche_part + "  [" + enquete_str + "]  " + droite_part)
+
+
+
+if __name__ == "__main__":
+    import main
+    main.main()

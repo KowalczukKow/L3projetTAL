@@ -39,7 +39,7 @@ def requete_mot(corpus):
 
         if 'coocc_droite' in infos and infos['coocc_droite']:
             existe_collocation = True
-            print("Principales collocations à droite (mot suivant : nb, PMI) :")
+            print("\nPrincipales collocations à droite (mot suivant : nb, PMI) :")
             # afficher les 5 meilleures collocations
             for mot2, co in list(infos['coocc_droite'].items())[:5]:
                 print(f"{mot2} : {co['nb']}, {round(co['pmi'], 5)}")
@@ -79,6 +79,12 @@ def requete_tag(corpus):
     print(f"Nombre de formes distinctes: {infos['nb_formes']}")
     print(f"Fréquence dans le corpus : {round(infos['nb_occ'] / corpus.nb_mots * 100, 4)}%")
         
-    print(f"Formes les 10 plus fréquentes pour ce tag (mot : nb, freq, rang) :")
+    print(f"\nFormes les 10 plus fréquentes pour ce tag (mot : nb, freq, rang) :")
     for forme in infos['formes_triees'][:10]:
         print(f"{forme['mot']} : {forme['nb']}, {forme['freq']}%, rang {forme['rang']}")
+
+
+
+if __name__ == "__main__":
+    import main
+    main.main()

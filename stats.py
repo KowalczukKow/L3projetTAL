@@ -32,7 +32,7 @@ def info_generale(corpus, automate=None):
     liste_mots.sort(key=lambda x: x[1], reverse=True)
 
     for mot, nb_occ, freq, rang in liste_mots[:10]:
-        print(f"{mot} : {nb_occ} occurrence(s), {freq}%, rang {rang}")
+        print(f"{rang}. {mot} : {nb_occ} occurrence(s), {freq}%")
 
     # Top 10 tags
 
@@ -46,8 +46,10 @@ def info_generale(corpus, automate=None):
 
     liste_tags.sort(key=lambda x: x[1], reverse=True)
 
+    rang_tag = 1
     for tag, nb_occ, freq in liste_tags[:10]:
-        print(f"{tag} : {nb_occ} occurrence(s), {freq}%")
+        print(f"{rang_tag}. {tag} : {nb_occ} occurrence(s), {freq}%")
+        rang_tag+=1
 
 
 def ranks_and_freqs(corpus):
@@ -129,5 +131,11 @@ def plot_zipf(corpus):
     plt.ylabel("log(fréquence)")
     plt.loglog(rangs, frequences, 'o', markersize=3)
     plt.show()
+
+
+
+if __name__ == "__main__":
+    import main
+    main.main()
    
             
