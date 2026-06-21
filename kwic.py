@@ -10,7 +10,7 @@ def kwic_words(corpus, word, size = 5, case_sensitive = False):
         if query not in corpus.index and word in corpus.index:
             query = word
 
-
+    if query not in corpus.index:
         print(f"Le mot '{word}' n'est pas trouvé dans le corpus.")
         return []
         

@@ -40,7 +40,8 @@ class CorpusStats:
 
                 # parcourir tous les mots de la ligne
                 for pos, token in enumerate(words, start=1):   # pos à partir de 1
-                    self.tokens.append(parser_token(token))
+                    mot, tag, token_new = parser_token(token)
+                    self.tokens.append((mot, tag, token_new))
                     self.nb_mots += 1
 
                     if automate :
