@@ -31,6 +31,11 @@ class exprMixte:
 
         self.nb_motags = len(self.demande)
 
+        # éviter de produire un message d'erreur quand aucune saisie détectée
+        if self.nb_motags == 0:
+            print("Aucune suite saisie")
+            return
+
         motag1, type = self.demande[0]
 
         for i in range(len(self.corpus.tokens) - self.nb_motags + 1) :

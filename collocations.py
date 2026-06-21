@@ -3,6 +3,11 @@ from parser import parser_token
 
 def cooccurrences(corpus):
         # calculer les cooccurrences pour chaque paire de mots adjacents dans le corpus
+
+        # éviter de doubler les résultats si les fonctions sont appelées plusieures fois
+        corpus.coocc_droite = {}
+        corpus.coocc_gauche = {}
+
         for sentence in corpus.sentences:
             for i in range(len(sentence) - 1):
                 token1 = sentence[i]
@@ -38,10 +43,21 @@ def cooccurrences(corpus):
 def pmi(corpus):
         # calculer le PMI pour chaque paire de mots dans les cooccurrences
 
+        # éviter de diviser par zéro
+        if corpus.nb_mots == 0:
+            return
+
         for mot1 in corpus.coocc_droite:
-        
-            for mot2 in corpus.coocc_droite[mot1]:
+            # éviter KeyError si mot1 n'est pas dans l'index
+            if mot1 not in corpus.index:
+                continue
             
+            for mot2 in corpus.coocc_droite[mot1]:
+                
+            # éviter KeyError si mot2 n'est pas dans l'index
+                if mot2 not in corpus.index:
+                    continue
+
                 nb_pair = corpus.coocc_droite[mot1][mot2]['nb']
                 nb_1 = corpus.index[mot1]['nb_occ']
                 nb_2 = corpus.index[mot2]['nb_occ']

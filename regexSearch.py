@@ -11,6 +11,11 @@ def requete_regex(corpus):
         return
 
     type = input("Recherche sur le mot ou sur son étiquette grammaticale ? (mot/tag, defaut mot) ").strip().lower()
+
+    # pour faire défaut mot
+    if not type:
+        type = 'mot'
+
     while type not in ('mot', 'tag'):
         type = input("Veuillez répondre 'mot' ou 'tag' : ").strip().lower()
 
@@ -18,7 +23,15 @@ def requete_regex(corpus):
     kwic = (kwic_choix == 'oui')
 
     if kwic:
-        size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+        saisie = input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ").strip()
+        
+        if not saisie:
+            size = 5
+        elif saisie.isdigit():
+            size = int(saisie)
+        else:
+            size = 5
+
         case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
         case_sensitive = (case_choix == 'oui')
 
@@ -32,7 +45,12 @@ def requete_regex(corpus):
         case_choix = input("Respecter la casse ? (oui/non, défaut non) : ").strip().lower()
         case_sensitive = (case_choix == 'oui')
 
-        regex = re.compile(pattern)
+        try:
+            regex = re.compile(pattern)
+        except re.error:
+            print("Expression régulière invalide, retout au menu.")
+            return
+        
         results = []
 
         for id_ligne, ligne in enumerate(corpus.sentences, start=1):

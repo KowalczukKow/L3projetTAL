@@ -7,10 +7,10 @@ def info_generale(corpus, automate=None):
         print("Nombre de mots recconus : ", corpus.nb_valides)
 
         if corpus.nb_valides != corpus.nb_mots :
-            print("Nombre de mots non recconnus : ", corpus.nb_mots - corpus.nb_valides)
+            print("Nombre de mots non reconnus : ", corpus.nb_mots - corpus.nb_valides)
 
-        print("Pourcentage de mots recconnus : ", corpus.nb_valides/corpus.nb_mots * 100, "%")
-        print("\nMots non recconnus : ")
+        print("Pourcentage de mots reconnus : ", corpus.nb_valides/corpus.nb_mots * 100, "%")
+        print("\nMots non reconnus : ")
 
         for mot_inv in corpus.liste_invalides :
             print(mot_inv)
