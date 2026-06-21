@@ -55,8 +55,15 @@ def requete_mot(corpus):
         kwic_choix = input("\nVoulez-vous afficher le contexte (KWIC) ? (oui/non) : ").strip().lower()
 
         if kwic_choix == 'oui':
-            size = int(input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ") or 5)
+            saisie = input("Entrez le nombre de mots à gauche et à droite que vous souhaitez afficher, par défaut 5) : ").strip()
 
+            if not saisie:
+                size = 5
+            elif saisie.isdigit():
+                size = int(saisie)
+            else:
+                size = 5
+                
             kwic_results = kwic_words(corpus, cible, size = size, case_sensitive=False)
 
             if kwic_results:

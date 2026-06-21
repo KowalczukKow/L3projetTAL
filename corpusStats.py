@@ -49,8 +49,8 @@ class CorpusStats:
                         elif test == True:
                             self.liste_invalides.append(token)
 
-                    # séparer le mot et son tag
-                    mot, tag, token_new = parser_token(token)
+                    # ici je supprime car je fais deux fois de parser_token, la première à la ligne 43
+
                     # rendre le mot en minuscules s'il n'est pas un nom propre
                     if tag != 'NPP':
                         mot = mot.lower()

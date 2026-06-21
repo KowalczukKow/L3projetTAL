@@ -1,17 +1,16 @@
 def kwic_words(corpus, word, size = 5, case_sensitive = False):
+    # je corrige ici car quand case_sensitive False, l'utilisateur tape "The" mais on cherche query = The donc on n'arrive pas à trouver les vrais "the"
 
     if case_sensitive:
         query = word 
     else: 
-        query = word
-        if word in corpus.index:
-            tags = corpus.index[word]['tags']
-            if 'NPP' in tags:
-                query = word  # garder la casse pour les noms propres
-            else:
-                query = word.lower()  # mettre en minuscules pour les autres mots
+        query = word.lower()
 
-    if query not in corpus.index:
+        # Si la forme miniscule n'est pas dans l'index, c'est possible d'être NPP et on doit conserver la casse
+        if query not in corpus.index and word in corpus.index:
+            query = word
+
+
         print(f"Le mot '{word}' n'est pas trouvé dans le corpus.")
         return []
         
